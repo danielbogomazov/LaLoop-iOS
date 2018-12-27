@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14460.32" systemVersion="18A391" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="Artist" representedClassName="Artist" parentEntity="RecordingInformation" syncable="YES">
+        <relationship name="recordings" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Recording" inverseName="artists" inverseEntity="Recording" syncable="YES"/>
+    </entity>
+    <entity name="Genre" representedClassName="Genre" parentEntity="RecordingInformation" syncable="YES">
+        <relationship name="recordings" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Recording" inverseName="genres" inverseEntity="Recording" syncable="YES"/>
+    </entity>
+    <entity name="Label" representedClassName="Label" parentEntity="RecordingInformation" syncable="YES">
+        <relationship name="recordings" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Recording" inverseName="labels" inverseEntity="Recording" syncable="YES"/>
+    </entity>
+    <entity name="Producer" representedClassName="Producer" parentEntity="RecordingInformation" syncable="YES">
+        <relationship name="recordings" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Recording" inverseName="producers" inverseEntity="Recording" syncable="YES"/>
+    </entity>
+    <entity name="Recording" representedClassName="Recording" parentEntity="RecordingInformation" syncable="YES">
+        <attribute name="release_date" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <relationship name="artists" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Artist" inverseName="recordings" inverseEntity="Artist" syncable="YES"/>
+        <relationship name="genres" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Genre" inverseName="recordings" inverseEntity="Genre" syncable="YES"/>
+        <relationship name="labels" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Label" inverseName="recordings" inverseEntity="Label" syncable="YES"/>
+        <relationship name="producers" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Producer" inverseName="recordings" inverseEntity="Producer" syncable="YES"/>
+    </entity>
+    <entity name="RecordingInformation" representedClassName="RecordingInformation" isAbstract="YES" syncable="YES">
+        <attribute name="id" attributeType="String" syncable="YES"/>
+        <attribute name="name" attributeType="String" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="Artist" positionX="-54" positionY="18" width="128" height="60"/>
+        <element name="Genre" positionX="9" positionY="81" width="128" height="60"/>
+        <element name="Label" positionX="-36" positionY="36" width="128" height="60"/>
+        <element name="Producer" positionX="27" positionY="90" width="128" height="60"/>
+        <element name="Recording" positionX="-63" positionY="-18" width="128" height="120"/>
+        <element name="RecordingInformation" positionX="-9" positionY="63" width="128" height="75"/>
+    </elements>
+</model>
