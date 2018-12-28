@@ -93,8 +93,7 @@ DevelopmentUtil.deleteSavedCoreData()
     func populateRecordings() {
         let request: NSFetchRequest<Recording> = Recording.fetchRequest()
         request.sortDescriptors = [NSSortDescriptor(key: "release_date", ascending: true)]
-        // Uncomment the bottom line after testing is finished
-//        request.predicate = NSPredicate(format: "release_date >= %@ OR release_date == nil", Date() as NSDate)
+        request.predicate = NSPredicate(format: "release_date >= %@ OR release_date == nil", Date() as NSDate)
         do {
             recordings = try AppDelegate.viewContext.fetch(request)
             recordings.sort {
