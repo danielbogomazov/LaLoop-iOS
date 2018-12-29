@@ -17,7 +17,7 @@ class BrowseViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-DevelopmentUtil.deleteSavedCoreData()
+
         view.backgroundColor = Util.Color.backgroundColor
         formatter.dateFormat = "MMMM dd, YYYY"
         
