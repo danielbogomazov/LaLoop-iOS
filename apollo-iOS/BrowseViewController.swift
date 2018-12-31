@@ -12,14 +12,12 @@ import CoreData
 class BrowseViewController: UIViewController {
     
     var recordingsTableView: UITableView!
-    let formatter: DateFormatter = DateFormatter()
     var recordings: [Recording] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         view.backgroundColor = Util.Color.backgroundColor
-        formatter.dateFormat = "MMMM dd, YYYY"
         
         setupTableView()
 
@@ -119,28 +117,7 @@ extension BrowseViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = RecordingTableViewCell(style: .value1, reuseIdentifier: "recordingTableViewCell")
-
-        cell.recording = recordings[indexPath.row].name
-        cell.artist = "Unknown Artist"
-        cell.date = "TBA"
-        if let date = recordings[indexPath.row].release_date {
-            cell.date = formatter.string(from: date)
-        }
-
-        for (index, artist) in recordings[indexPath.row].artists.enumerated() {
-            if index > 0 {
-                cell.artist!.append(" & " + artist.name )
-            } else {
-                cell.artist = artist.name
-            }
-        }
-        
-        cell.accessoryType = .disclosureIndicator
-        
-        cell.translatesAutoresizingMaskIntoConstraints = false
-        
-        return cell
+        return RecordingTableViewCell(recording: recordings[indexPath.row])
     }
 }
 
@@ -149,32 +126,31 @@ class RecordingTableViewCell: UITableViewCell {
     private let dateLabel = UILabel()
     private let recordingLabel = UILabel()
     private let artistLabel = UILabel()
+    private var recordingObj: Recording!
     
     private let margin: CGFloat = 8.0
     private let labelMargin: CGFloat = 2.0
 
     var recordingImage: UIImage? {
         get { return newImageView.image }
-        set { newImageView.image = newValue }
+    }
+    var releaseDate: String {
+        get { return dateLabel.text! }
+    }
+    var recordingName: String {
+        get { return recordingLabel.text! }
+    }
+    var artistName: String {
+        get { return artistLabel.text! }
+    }
+    var recording: Recording {
+        get { return recordingObj }
     }
     
-    var date: String? {
-        get { return dateLabel.text }
-        set { dateLabel.text = newValue }
-    }
-    
-    var recording: String? {
-        get { return recordingLabel.text }
-        set { recordingLabel.text = newValue }
-    }
-    
-    var artist: String? {
-        get { return artistLabel.text }
-        set { artistLabel.text = newValue }
-    }
-    
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
+    init(recording: Recording) {
+        super.init(style: .default, reuseIdentifier: "recordingTableViewCell")
+
+        recordingObj = recording
 
         backgroundColor = UIColor.clear
 
@@ -201,6 +177,18 @@ class RecordingTableViewCell: UITableViewCell {
         addSubview(dateLabel)
         addSubview(recordingLabel)
         addSubview(artistLabel)
+        
+        recordingLabel.text = recording.name
+        dateLabel.text = "TBA"
+        
+        if let date = recording.release_date {
+            let formatter: DateFormatter = DateFormatter()
+            formatter.dateFormat = "MMMM dd, YYYY"
+            dateLabel.text = formatter.string(from: date)
+        }
+        for (index, artist) in recording.artists.enumerated() {
+            artistLabel.text = index > 0 ? "\(artistLabel.text!) & \(artist.name!)" : artist.name
+        }
     }
     
     private func setupLabel(_ label: UILabel, fontWeight: UIFont.Weight, textColor: UIColor = UIColor.white) {
@@ -215,43 +203,3 @@ class RecordingTableViewCell: UITableViewCell {
     }
     
 }
-
-//
-//    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-//        return recordings.count
-//    }
-//
-//    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-//        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "recordingCellId", for: indexPath) as! RecordingCollectionViewCell
-//        let recording = recordings[indexPath.row]
-//
-//        cell.recordingInfoLabel.text = recording.artist + " - " + recording.name!
-//
-//        if recording.releaseDate == nil {
-//            cell.releaseDateLabel.text = "TBA"
-//        } else {
-//            if Util.noDay(from: recording.releaseDate!) {
-//                cell.releaseDateLabel.text = Util.trueDate(from: recording.releaseDate!)
-//            } else {
-//                cell.releaseDateLabel.text = Util.getCountdownString(until: recording.releaseDate!)
-//            }
-//        }
-//
-//        cell.backgroundColor = UIColor.white
-//
-//        cell.coverImageView.image = #imageLiteral(resourceName: "recording_placeholder")
-//        return cell
-//    }
-//
-//}
-
-// MARK: - UICollectionViewDelegateFlowLayout
-//extension BrowseViewController: UICollectionViewDelegateFlowLayout {
-//
-//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-//        return CGSize(width: collectionView.bounds.width, height: collectionView.bounds.height / 4)
-//    }
-//
-//}
-
-
