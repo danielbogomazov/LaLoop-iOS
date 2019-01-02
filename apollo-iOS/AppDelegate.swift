@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import UserNotifications
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -35,6 +36,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         navigationController.navigationBar.tintColor = UIColor.white
         navigationController.viewControllers = [browseViewController]
         
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge]) { (didAllow, error) in
+            if let e = error {
+                print(e.localizedDescription)
+                // TODO
+            }
+            if !didAllow {
+                // TODO : User did not allow the use of notifications
+                // Create an explination in the settings or as a popup to explain why it is needed
+            }
+        }
+        
         return true
     }
 
@@ -53,7 +65,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
-        // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+        browseViewController.reloadTableView()
     }
 
     func applicationWillTerminate(_ application: UIApplication) {

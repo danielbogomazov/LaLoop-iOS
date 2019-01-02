@@ -11,8 +11,8 @@ import CoreData
 
 class BrowseViewController: UIViewController {
     
-    var recordingsTableView: UITableView!
-    var recordings: [Recording] = []
+    private var recordingsTableView: UITableView!
+    private var recordings: [Recording] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,8 +24,7 @@ class BrowseViewController: UIViewController {
         getData(completionHandler: { success in
             DispatchQueue.main.async {
                 if success {
-                    self.populateRecordings()
-                    self.recordingsTableView.reloadData()
+                    self.reloadTableView()
                 } else {
                     // TODO - Load from cache?
                 }
@@ -103,6 +102,11 @@ class BrowseViewController: UIViewController {
             print("Could not fetch. \(error), \(error.userInfo)")
         }
     }
+
+    func reloadTableView() {
+        populateRecordings()
+        recordingsTableView.reloadData()
+    }
 }
 
 // MARK: - UITableViewDelegate, UITableViewDataSource
@@ -118,6 +122,47 @@ extension BrowseViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         return RecordingTableViewCell(recording: recordings[indexPath.row])
+    }
+    
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        
+        let cell = tableView.cellForRow(at: indexPath) as! RecordingTableViewCell
+        let recordingID = cell.recording.id!
+        
+        if var followedArtists = UserDefaults.standard.array(forKey: "Followed Artists") as? [String] {
+            if followedArtists.contains(recordingID), let index = followedArtists.firstIndex(of: recordingID) {
+                return [UITableViewRowAction(style: .default, title: "Unfollow") { (_, _) in
+                    followedArtists.remove(at: index)
+                    UserDefaults.standard.set(followedArtists, forKey: "Followed Artists")
+                    LocalNotif.removeRecording(id: recordingID)
+                }]
+            } else {
+                return [UITableViewRowAction(style: .default, title: "Follow") { (_, _) in
+                    followedArtists.append(recordingID)
+                    UserDefaults.standard.set(followedArtists, forKey: "Followed Artists")
+                    LocalNotif.createNewRecording(recording: cell.recording, completionHandler: { (success, error) in
+                        if let e = error {
+                            print(e.localizedDescription)
+                        }
+                        if !success {
+                            // TODO
+                        }
+                    })
+                }]
+            }
+        } else {
+            return [UITableViewRowAction(style: .default, title: "Follow") { (_, _) in
+                UserDefaults.standard.set([recordingID], forKey: "Followed Artists")
+                LocalNotif.createNewRecording(recording: cell.recording, completionHandler: { (success, error) in
+                    if let e = error {
+                        print(e.localizedDescription)
+                    }
+                    if !success {
+                        // TODO
+                    }
+                })
+            }]
+        }
     }
 }
 
