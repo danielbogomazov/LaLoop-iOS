@@ -87,6 +87,7 @@ public class DevelopmentUtil {
         print("\n== Saved Recordings ==")
         for recording in recordings {
             print(recording.id)
+            print(recording.name)
             print(recording.release_date ?? "TBA")
             print("Num of artists: \(recording.artists.count)")
         }
@@ -94,21 +95,25 @@ public class DevelopmentUtil {
         print("\n== Saved Artists ==")
         for artist in artists {
             print(artist.id)
+            print(artist.name)
         }
         
         print("\n== Saved Genres ==")
         for genre in genres {
             print(genre.id)
+            print(genre.name)
         }
         
         print("\n== Saved Labels ==")
         for label in labels {
             print(label.id)
+            print(label.name)
         }
 
         print("\n== Saved Producers ==")
         for producer in producers {
             print(producer.id)
+            print(producer.name)
         }
     }
     
