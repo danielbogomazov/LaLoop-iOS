@@ -127,18 +127,19 @@ extension BrowseViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         
         let cell = tableView.cellForRow(at: indexPath) as! RecordingTableViewCell
-        let recordingID = cell.recording.id!
+        guard let artistID = cell.recording.artists.first?.id else { return [] }
         
         if var followedArtists = UserDefaults.standard.array(forKey: "Followed Artists") as? [String] {
-            if followedArtists.contains(recordingID), let index = followedArtists.firstIndex(of: recordingID) {
+            if followedArtists.contains(artistID), let index = followedArtists.firstIndex(of: artistID) {
                 return [UITableViewRowAction(style: .default, title: "Unfollow") { (_, _) in
                     followedArtists.remove(at: index)
                     UserDefaults.standard.set(followedArtists, forKey: "Followed Artists")
-                    LocalNotif.removeRecording(id: recordingID)
+                    LocalNotif.removeRecording(id: artistID)
+                    cell.updateButtonImage()
                 }]
             } else {
                 return [UITableViewRowAction(style: .default, title: "Follow") { (_, _) in
-                    followedArtists.append(recordingID)
+                    followedArtists.append(artistID)
                     UserDefaults.standard.set(followedArtists, forKey: "Followed Artists")
                     LocalNotif.createNewRecording(recording: cell.recording, completionHandler: { (success, error) in
                         if let e = error {
@@ -147,12 +148,13 @@ extension BrowseViewController: UITableViewDelegate, UITableViewDataSource {
                         if !success {
                             // TODO
                         }
+                        cell.updateButtonImage()
                     })
                 }]
             }
         } else {
             return [UITableViewRowAction(style: .default, title: "Follow") { (_, _) in
-                UserDefaults.standard.set([recordingID], forKey: "Followed Artists")
+                UserDefaults.standard.set([artistID], forKey: "Followed Artists")
                 LocalNotif.createNewRecording(recording: cell.recording, completionHandler: { (success, error) in
                     if let e = error {
                         print(e.localizedDescription)
@@ -160,6 +162,7 @@ extension BrowseViewController: UITableViewDelegate, UITableViewDataSource {
                     if !success {
                         // TODO
                     }
+                    cell.updateButtonImage()
                 })
             }]
         }
@@ -167,7 +170,7 @@ extension BrowseViewController: UITableViewDelegate, UITableViewDataSource {
 }
 
 class RecordingTableViewCell: UITableViewCell {
-    private let newImageView = UIImageView()
+    private let followingButton = UIButton()
     private let dateLabel = UILabel()
     private let recordingLabel = UILabel()
     private let artistLabel = UILabel()
@@ -176,9 +179,6 @@ class RecordingTableViewCell: UITableViewCell {
     private let margin: CGFloat = 8.0
     private let labelMargin: CGFloat = 2.0
 
-    var recordingImage: UIImage? {
-        get { return newImageView.image }
-    }
     var releaseDate: String {
         get { return dateLabel.text! }
     }
@@ -201,24 +201,23 @@ class RecordingTableViewCell: UITableViewCell {
 
         let margin: CGFloat = 20
         let imageSize: CGFloat = 60.0
-        newImageView.frame = CGRect(x: margin, y: margin, width: imageSize, height: imageSize)
         
-        let labelX = newImageView.frame.maxX + margin
+        followingButton.frame = CGRect(x: margin, y: margin, width: margin, height: margin)
+        followingButton.contentMode = .scaleAspectFill
+        followingButton.clipsToBounds = true
+        updateButtonImage()
+
+        let labelX = followingButton.frame.maxX + margin
         let labelWidth = contentView.frame.width - labelX
-        artistLabel.frame = CGRect(x: labelX, y: newImageView.frame.origin.y, width: labelWidth, height: imageSize * 0.5)
+        artistLabel.frame = CGRect(x: labelX, y: followingButton.frame.origin.y, width: labelWidth, height: imageSize * 0.5)
         recordingLabel.frame = CGRect(x: labelX, y: artistLabel.frame.maxY, width: labelWidth, height: imageSize * 0.5 * 0.60)
         dateLabel.frame = CGRect(x: labelX, y: recordingLabel.frame.maxY, width: labelWidth, height: imageSize * 0.5 * 0.40)
-        
-        newImageView.layer.borderColor = Util.Color.main.cgColor
-        newImageView.layer.borderWidth = 1
-        newImageView.contentMode = .scaleAspectFill
-        newImageView.clipsToBounds = true
         
         setupLabel(artistLabel, fontWeight: .black, textColor: UIColor.yellow)
         setupLabel(recordingLabel, fontWeight: .heavy)
         setupLabel(dateLabel, fontWeight: .regular)
 
-        addSubview(newImageView)
+        addSubview(followingButton)
         addSubview(dateLabel)
         addSubview(recordingLabel)
         addSubview(artistLabel)
@@ -236,6 +235,10 @@ class RecordingTableViewCell: UITableViewCell {
         }
     }
     
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     private func setupLabel(_ label: UILabel, fontWeight: UIFont.Weight, textColor: UIColor = UIColor.white) {
         label.font = UIFont.monospacedDigitSystemFont(ofSize: label.bounds.height, weight: fontWeight)
         label.textColor = textColor
@@ -243,8 +246,15 @@ class RecordingTableViewCell: UITableViewCell {
         label.adjustsFontSizeToFitWidth = true
     }
     
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    func updateButtonImage() {
+        DispatchQueue.main.async {
+            if let artistID = self.recording.artists.first?.id,
+                let artists = UserDefaults.standard.array(forKey: "Followed Artists") as? [String],
+                artists.contains(artistID) {
+                self.followingButton.setImage(UIImage(named: "Followed"), for: .normal)
+            } else {
+                self.followingButton.setImage(UIImage(named: "NotFollowed"), for: .normal)
+            }
+        }
     }
-    
 }
