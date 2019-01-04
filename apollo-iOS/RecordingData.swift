@@ -33,52 +33,86 @@ struct RecordingObj: Decodable {
         let genres = findMatchFor(entity: .genre) as! [Genre]
         let labels = findMatchFor(entity: .label) as! [Label]
         let producers = findMatchFor(entity: .producer) as! [Producer]
-
-        if recordings.count < 1 {
-            // Recording not found -- create a new entity
-            let newRecording = createNewFor(entity: .recording) as! Recording
-
-            if artist_id != "" && artists.count < 1 {
-                let newArtist = createNewFor(entity: .artist) as! Artist
-                newArtist.recordings.insert(newRecording)
-                newRecording.artists.insert(newArtist)
-            } else if artist_id != "" && artists.count == 0 {
-                artists[0].recordings.insert(newRecording)
-                newRecording.artists.insert(artists[0])
-            }
-            
-            if genre_id != "" && genres.count < 1 {
-                let newGenre = createNewFor(entity: .genre) as! Genre
-                newGenre.recordings.insert(newRecording)
-                newRecording.genres.insert(newGenre)
-            } else if genre_id != "" && genres.count == 0 {
-                genres[0].recordings.insert(newRecording)
-                newRecording.genres.insert(genres[0])
-            }
         
-            if label_id != "" && labels.count < 1 {
-                let newLabel = createNewFor(entity: .label) as! Label
-                newLabel.recordings.insert(newRecording)
-                newRecording.labels.insert(newLabel)
-            } else if label_id != "" && labels.count == 0 {
-                labels[0].recordings.insert(newRecording)
-                newRecording.labels.insert(labels[0])
+        var recording: Recording!
+        
+        if recordings.count < 1 {
+            recording = (createNewFor(entity: .recording) as! Recording)
+        } else {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd"
+            recording = recordings[0]
+            recording.name = recording_name
+            recording.release_date = recording_release_date != "" ? formatter.date(from: recording_release_date)! : nil
+        }
+
+        artist_id == "" ? recording.artists.removeAll() : addEntityFor(entity: .artist, found: artists, recording: recording)
+        genre_id == "" ? recording.genres.removeAll() : addEntityFor(entity: .genre, found: genres, recording: recording)
+        label_id == "" ? recording.labels.removeAll() : addEntityFor(entity: .label, found: labels, recording: recording)
+        producer_id == "" ? recording.producers.removeAll() : addEntityFor(entity: .producer, found: producers, recording: recording)
+
+        do {
+            try AppDelegate.viewContext.save()
+        } catch let error as NSError {
+            print("ERROR - \(error)\n--\(error.userInfo)")
+        }
+    }
+    
+    /// Adds or updates a recording with its related entities
+    ///
+    /// - Parameters:
+    ///   - entity: artist, genre, label, producer
+    ///   - found: array of found entitites matching the RecordingObj variables
+    ///   - recording: recording to assign new or update previous entities
+    func addEntityFor(entity: Util.entity, found: [RecordingInformation], recording: Recording) {
+        switch entity {
+        case .artist:
+            let artists = found as! [Artist]
+            if artists.count < 1 {
+                let newEntity = createNewFor(entity: entity) as! Artist
+                newEntity.recordings.insert(recording)
+                recording.artists.insert(newEntity)
+            } else if artists.count == 1 && recording.artists.contains(where: { (artist) -> Bool in return artist.id == artist_id }) {
+                artists[0].name = artist_name
+                recording.artists.insert(artists[0])
+                artists[0].recordings.insert(recording)
             }
-            
-            if producer_id != "" && producers.count < 1 {
-                let newProducer = createNewFor(entity: .producer) as! Producer
-                newProducer.recordings.insert(newRecording)
-                newRecording.producers.insert(newProducer)
-            } else if producer_id != "" && producers.count == 0 {
-                producers[0].recordings.insert(newRecording)
-                newRecording.producers.insert(producers[0])
+        case .genre:
+            let genres = found as! [Genre]
+            if genres.count < 1 {
+                let newEntity = createNewFor(entity: entity) as! Genre
+                newEntity.recordings.insert(recording)
+                recording.genres.insert(newEntity)
+            } else if genres.count == 1 && recording.genres.contains(where: { (genre) -> Bool in return genre.id == genre_id }) {
+                genres[0].name = genre_name
+                recording.genres.insert(genres[0])
+                genres[0].recordings.insert(recording)
             }
-            
-            do {
-                try AppDelegate.viewContext.save()
-            } catch let error as NSError {
-                print("ERROR - \(error)\n--\(error.userInfo)")
+        case .label:
+            let labels = found as! [Label]
+            if labels.count < 1 {
+                let newEntity = createNewFor(entity: entity) as! Label
+                newEntity.recordings.insert(recording)
+                recording.labels.insert(newEntity)
+            } else if labels.count == 1 && recording.labels.contains(where: { (label) -> Bool in return label.id == label_id }) {
+                labels[0].name = label_name
+                recording.labels.insert(labels[0])
+                labels[0].recordings.insert(recording)
             }
+        case .producer:
+            let producers = found as! [Producer]
+            if producers.count < 1 {
+                let newEntity = createNewFor(entity: entity) as! Producer
+                newEntity.recordings.insert(recording)
+                recording.producers.insert(newEntity)
+            } else if producers.count == 1 && recording.producers.contains(where: { (producer) -> Bool in return producer.id == producer_id }) {
+                producers[0].name = producer_name
+                recording.producers.insert(producers[0])
+                producers[0].recordings.insert(recording)
+            }
+        default:
+            print("Warning: RecordingData.addEntityFor(...) does not support recording entities")
+            print("No new entity added")
         }
     }
     
