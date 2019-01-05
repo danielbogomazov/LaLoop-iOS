@@ -26,8 +26,14 @@ struct RecordingObj: Decodable {
     var producer_id: String
     var producer_name: String
     
-    func save() {
+    mutating func save() {
 
+        recording_name = Util.replaceCharEntitites(string: recording_name)
+        artist_name = Util.replaceCharEntitites(string: artist_name)
+        genre_name = Util.replaceCharEntitites(string: genre_name)
+        label_name = Util.replaceCharEntitites(string: label_name)
+        producer_name = Util.replaceCharEntitites(string: producer_name)
+        
         let recordings = findMatchFor(entity: .recording) as! [Recording]
         let artists = findMatchFor(entity: .artist) as! [Artist]
         let genres = findMatchFor(entity: .genre) as! [Genre]

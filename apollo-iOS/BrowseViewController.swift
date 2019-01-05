@@ -56,7 +56,7 @@ class BrowseViewController: UIViewController {
             }
             do {
                 let jsonData = try JSONDecoder().decode(RecordingData.self, from: data)
-                for recording in jsonData.recordings {
+                for var recording in jsonData.recordings {
                     DispatchQueue.main.async {
                         recording.save()
                     }

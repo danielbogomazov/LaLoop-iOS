@@ -30,7 +30,8 @@ public class Util {
         static let secondaryDark: UIColor = UIColor(red: 34/255, green: 112/255, blue: 102/255, alpha: 1)
         static let yellow: UIColor = UIColor(red: 255/255, green: 221/255, blue: 92/255, alpha: 1)
     }
-        
+    
+    
     static func getCountdownString(until releaseDate: Date) -> String {
         let calendar = NSCalendar.current
         let current = calendar.startOfDay(for: Date())
@@ -72,6 +73,22 @@ public class Util {
         
         formatter.dateFormat = "MMMM dd, YYYY"
         return formatter.string(from: date)
+    }
+    
+    static func replaceCharEntitites(string: String) -> String {
+        var newString = string
+        newString = newString.replacingOccurrences(of: "&lt;", with: "<", options: .literal, range: nil)
+        newString = newString.replacingOccurrences(of: "&gt;", with: ">", options: .literal, range: nil)
+        newString = newString.replacingOccurrences(of: "&amp;", with: "&", options: .literal, range: nil)
+        newString = newString.replacingOccurrences(of: "&quot;", with: "\"", options: .literal, range: nil)
+        newString = newString.replacingOccurrences(of: "&apos;", with: "\'", options: .literal, range: nil)
+        newString = newString.replacingOccurrences(of: "&cent;", with: "¢", options: .literal, range: nil)
+        newString = newString.replacingOccurrences(of: "&pound;", with: "£", options: .literal, range: nil)
+        newString = newString.replacingOccurrences(of: "&yen;", with: "¥", options: .literal, range: nil)
+        newString = newString.replacingOccurrences(of: "&euro;", with: "€", options: .literal, range: nil)
+        newString = newString.replacingOccurrences(of: "&copy;", with: "©", options: .literal, range: nil)
+        newString = newString.replacingOccurrences(of: "&copy;", with: "®", options: .literal, range: nil)
+        return newString
     }
 }
 
