@@ -229,6 +229,16 @@ class RecordingTableViewCell: UITableViewCell {
             let formatter: DateFormatter = DateFormatter()
             formatter.dateFormat = "MMMM dd, YYYY"
             dateLabel.text = formatter.string(from: date)
+
+            guard let dateString = dateLabel.text else { return }
+            
+            if let year = Int(dateString.suffix(4)), let currentYear = Int(formatter.string(from: Date()).suffix(4)) {
+                if year >= currentYear  + 1999 {
+                    let startIndex = dateString.index(dateString.endIndex, offsetBy: -8)
+                    let range = startIndex..<dateString.endIndex
+                    dateLabel.text?.replaceSubrange(range, with: "\(year - 1999)")
+                }
+            }
         }
         for (index, artist) in recording.artists.enumerated() {
             artistLabel.text = index > 0 ? "\(artistLabel.text!) & \(artist.name!)" : artist.name
