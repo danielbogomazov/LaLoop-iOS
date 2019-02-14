@@ -129,16 +129,20 @@ extension BrowseViewController: UITableViewDelegate, UITableViewDataSource {
         let cell = tableView.cellForRow(at: indexPath) as! RecordingTableViewCell
         guard let artistID = cell.recording.artists.first?.id else { return [] }
         
+        // TODO : Clean up the below code
+        
         if var followedArtists = UserDefaults.standard.array(forKey: "Followed Artists") as? [String] {
             if followedArtists.contains(artistID), let index = followedArtists.firstIndex(of: artistID) {
-                return [UITableViewRowAction(style: .default, title: "Unfollow") { (_, _) in
+                let unfollow = UITableViewRowAction(style: .default, title: "Unfollow") { (_, _) in
                     followedArtists.remove(at: index)
                     UserDefaults.standard.set(followedArtists, forKey: "Followed Artists")
                     LocalNotif.removeRecording(id: artistID)
                     cell.updateButtonImage()
-                }]
+                }
+                unfollow.backgroundColor = Util.Color.secondaryDark
+                return [unfollow]
             } else {
-                return [UITableViewRowAction(style: .default, title: "Follow") { (_, _) in
+                let follow = UITableViewRowAction(style: .default, title: "Follow") { (_, _) in
                     followedArtists.append(artistID)
                     UserDefaults.standard.set(followedArtists, forKey: "Followed Artists")
                     LocalNotif.createNewRecording(recording: cell.recording, completionHandler: { (success, error) in
@@ -150,10 +154,12 @@ extension BrowseViewController: UITableViewDelegate, UITableViewDataSource {
                         }
                         cell.updateButtonImage()
                     })
-                }]
+                }
+                follow.backgroundColor = Util.Color.secondary
+                return [follow]
             }
         } else {
-            return [UITableViewRowAction(style: .default, title: "Follow") { (_, _) in
+            let follow = UITableViewRowAction(style: .default, title: "Follow") { (_, _) in
                 UserDefaults.standard.set([artistID], forKey: "Followed Artists")
                 LocalNotif.createNewRecording(recording: cell.recording, completionHandler: { (success, error) in
                     if let e = error {
@@ -164,7 +170,9 @@ extension BrowseViewController: UITableViewDelegate, UITableViewDataSource {
                     }
                     cell.updateButtonImage()
                 })
-            }]
+            }
+            follow.backgroundColor = Util.Color.secondary
+            return [follow]
         }
     }
 }
@@ -213,7 +221,7 @@ class RecordingTableViewCell: UITableViewCell {
         recordingLabel.frame = CGRect(x: labelX, y: artistLabel.frame.maxY, width: labelWidth, height: imageSize * 0.5 * 0.60)
         dateLabel.frame = CGRect(x: labelX, y: recordingLabel.frame.maxY, width: labelWidth, height: imageSize * 0.5 * 0.40)
         
-        setupLabel(artistLabel, fontWeight: .black, textColor: UIColor.yellow)
+        setupLabel(artistLabel, fontWeight: .black, textColor: Util.Color.main)
         setupLabel(recordingLabel, fontWeight: .heavy)
         setupLabel(dateLabel, fontWeight: .regular)
 

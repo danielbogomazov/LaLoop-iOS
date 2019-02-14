@@ -24,11 +24,9 @@ public class Util {
 
     struct Color {
         static let backgroundColor: UIColor = UIColor(red: 30/255, green: 30/255, blue: 30/255, alpha: 1)
-        static let main: UIColor = UIColor(red: 38/255, green: 89/255, blue: 97/255, alpha: 1)
-        static let mainDark: UIColor = UIColor(red: 33/255, green: 65/255, blue: 84/255, alpha: 1)
-        static let secondary: UIColor = UIColor(red: 118/255, green: 166/255, blue: 101/255, alpha: 1)
-        static let secondaryDark: UIColor = UIColor(red: 34/255, green: 112/255, blue: 102/255, alpha: 1)
-        static let yellow: UIColor = UIColor(red: 255/255, green: 221/255, blue: 92/255, alpha: 1)
+        static let main: UIColor = UIColor(red: 255/255, green: 221/255, blue: 92/255, alpha: 1)
+        static let secondary: UIColor = UIColor(red: 34/255, green: 112/255, blue: 102/255, alpha: 1)
+        static let secondaryDark: UIColor = UIColor(red: 38/255, green: 89/255, blue: 97/255, alpha: 1)
     }
     
     
