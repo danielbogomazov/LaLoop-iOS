@@ -77,7 +77,13 @@ class BrowseViewController: UIViewController {
     }
     
     func setupTableView() {
-        let frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height)
+        
+        // Safe Area
+        let y: CGFloat = navigationController?.navigationBar.frame.maxY ?? 0
+        let height: CGFloat = view.frame.height - y - (tabBarController?.tabBar.frame.height ?? 0)
+        
+        let frame = CGRect(x: 0, y: y, width: view.bounds.width, height: height)
+
         recordingsTableView = UITableView(frame: frame, style: .grouped)
         recordingsTableView.backgroundColor = Util.Color.backgroundColor
         recordingsTableView.estimatedRowHeight = 100
@@ -206,6 +212,7 @@ class RecordingTableViewCell: UITableViewCell {
         recordingObj = recording
 
         backgroundColor = UIColor.clear
+        selectionStyle = .none
 
         let margin: CGFloat = 20
         let imageSize: CGFloat = 60.0

@@ -14,8 +14,12 @@ import UserNotifications
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-    var navigationController = UINavigationController()
+    
+    var tabBarController = UITabBarController()
+    
+    var browseNavController = UINavigationController()
     var browseViewController = BrowseViewController()
+    
     
     static var persistentContainer: NSPersistentContainer {
         return (UIApplication.shared.delegate as! AppDelegate).persistentContainer
@@ -26,15 +30,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
-        window = UIWindow(frame: UIScreen.main.bounds)
-        window?.rootViewController = navigationController
-        window?.makeKeyAndVisible()
-        
         browseViewController.title = "apollo"
+            
+        browseNavController.title = "Browse"
+        browseNavController.navigationBar.barStyle = .blackOpaque
+        browseNavController.navigationBar.tintColor = UIColor.white
+        browseNavController.viewControllers = [browseViewController]
         
-        navigationController.navigationBar.barStyle = .blackOpaque
-        navigationController.navigationBar.tintColor = UIColor.white
-        navigationController.viewControllers = [browseViewController]
+        tabBarController.tabBar.barStyle = .blackOpaque
+        tabBarController.tabBar.tintColor = UIColor.white
+        tabBarController.viewControllers = [browseNavController]
+        
+        window = UIWindow(frame: UIScreen.main.bounds)
+        window?.rootViewController = tabBarController
+        window?.makeKeyAndVisible()
         
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge]) { (didAllow, error) in
             if let e = error {
