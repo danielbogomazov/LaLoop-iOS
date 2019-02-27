@@ -150,12 +150,12 @@ extension BrowseViewController: UITableViewDelegate, UITableViewDataSource {
         guard let artistID = cell.recording.artists.first?.id else { return [] }
         
         // TODO : Clean up the below code
-        
-        if var followedArtists = UserDefaults.standard.array(forKey: "Followed Artists") as? [String] {
+                
+        if var followedArtists = UserDefaults.standard.array(forKey: Util.Constant.followedArtistsKey) as? [String] {
             if followedArtists.contains(artistID), let index = followedArtists.firstIndex(of: artistID) {
                 let unfollow = UITableViewRowAction(style: .default, title: "Unfollow") { (_, _) in
                     followedArtists.remove(at: index)
-                    UserDefaults.standard.set(followedArtists, forKey: "Followed Artists")
+                    UserDefaults.standard.set(followedArtists, forKey: Util.Constant.followedArtistsKey)
                     LocalNotif.removeRecording(id: artistID)
                     cell.updateButtonImage()
                 }
@@ -164,7 +164,7 @@ extension BrowseViewController: UITableViewDelegate, UITableViewDataSource {
             } else {
                 let follow = UITableViewRowAction(style: .default, title: "Follow") { (_, _) in
                     followedArtists.append(artistID)
-                    UserDefaults.standard.set(followedArtists, forKey: "Followed Artists")
+                    UserDefaults.standard.set(followedArtists, forKey: Util.Constant.followedArtistsKey)
                     LocalNotif.createNewRecording(recording: cell.recording, completionHandler: { (success, error) in
                         if let e = error {
                             print(e.localizedDescription)
@@ -180,7 +180,7 @@ extension BrowseViewController: UITableViewDelegate, UITableViewDataSource {
             }
         } else {
             let follow = UITableViewRowAction(style: .default, title: "Follow") { (_, _) in
-                UserDefaults.standard.set([artistID], forKey: "Followed Artists")
+                UserDefaults.standard.set([artistID], forKey: Util.Constant.followedArtistsKey)
                 LocalNotif.createNewRecording(recording: cell.recording, completionHandler: { (success, error) in
                     if let e = error {
                         print(e.localizedDescription)

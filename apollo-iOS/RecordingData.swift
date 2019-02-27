@@ -23,8 +23,6 @@ struct RecordingObj: Decodable {
     var genre_name: String
     var label_id: String
     var label_name: String
-    var producer_id: String
-    var producer_name: String
     
     mutating func save() {
 
@@ -32,13 +30,11 @@ struct RecordingObj: Decodable {
         artist_name = Util.replaceCharEntitites(string: artist_name)
         genre_name = Util.replaceCharEntitites(string: genre_name)
         label_name = Util.replaceCharEntitites(string: label_name)
-        producer_name = Util.replaceCharEntitites(string: producer_name)
-        
+
         let recordings = findMatchFor(entity: .recording) as! [Recording]
         let artists = findMatchFor(entity: .artist) as! [Artist]
         let genres = findMatchFor(entity: .genre) as! [Genre]
         let labels = findMatchFor(entity: .label) as! [Label]
-        let producers = findMatchFor(entity: .producer) as! [Producer]
         
         var recording: Recording!
         
@@ -55,7 +51,6 @@ struct RecordingObj: Decodable {
         artist_id == "" ? recording.artists.removeAll() : addEntityFor(entity: .artist, found: artists, recording: recording)
         genre_id == "" ? recording.genres.removeAll() : addEntityFor(entity: .genre, found: genres, recording: recording)
         label_id == "" ? recording.labels.removeAll() : addEntityFor(entity: .label, found: labels, recording: recording)
-        producer_id == "" ? recording.producers.removeAll() : addEntityFor(entity: .producer, found: producers, recording: recording)
 
         do {
             try AppDelegate.viewContext.save()
@@ -67,7 +62,7 @@ struct RecordingObj: Decodable {
     /// Adds or updates a recording with its related entities
     ///
     /// - Parameters:
-    ///   - entity: artist, genre, label, producer
+    ///   - entity: artist, genre, label
     ///   - found: array of found entitites matching the RecordingObj variables
     ///   - recording: recording to assign new or update previous entities
     func addEntityFor(entity: Util.entity, found: [RecordingInformation], recording: Recording) {
@@ -105,17 +100,6 @@ struct RecordingObj: Decodable {
                 recording.labels.insert(labels[0])
                 labels[0].recordings.insert(recording)
             }
-        case .producer:
-            let producers = found as! [Producer]
-            if producers.count < 1 {
-                let newEntity = createNewFor(entity: entity) as! Producer
-                newEntity.recordings.insert(recording)
-                recording.producers.insert(newEntity)
-            } else if producers.count == 1 && recording.producers.contains(where: { (producer) -> Bool in return producer.id == producer_id }) {
-                producers[0].name = producer_name
-                recording.producers.insert(producers[0])
-                producers[0].recordings.insert(recording)
-            }
         default:
             print("Warning: RecordingData.addEntityFor(...) does not support recording entities")
             print("No new entity added")
@@ -151,18 +135,9 @@ struct RecordingObj: Decodable {
             } catch {
                 return []
             }
-        case .label:
+        default:
             let request: NSFetchRequest<Label> = Label.fetchRequest()
             request.predicate = NSPredicate(format: "id == %@", label_id)
-            do {
-                let found = try AppDelegate.viewContext.fetch(request)
-                return found
-            } catch {
-                return []
-            }
-        default:
-            let request: NSFetchRequest<Producer> = Producer.fetchRequest()
-            request.predicate = NSPredicate(format: "id == %@", producer_id)
             do {
                 let found = try AppDelegate.viewContext.fetch(request)
                 return found
@@ -196,18 +171,12 @@ struct RecordingObj: Decodable {
             newGenre.id = genre_id
             newGenre.name = genre_name
             return newGenre
-        case .label:
+        default:
             let newEntity = NSEntityDescription.entity(forEntityName: "Label", in: AppDelegate.viewContext)!
             let newLabel = NSManagedObject(entity: newEntity, insertInto: AppDelegate.viewContext) as! Label
             newLabel.id = label_id
             newLabel.name = label_name
             return newLabel
-        default:
-            let newEntity = NSEntityDescription.entity(forEntityName: "Producer", in: AppDelegate.viewContext)!
-            let newProducer = NSManagedObject(entity: newEntity, insertInto: AppDelegate.viewContext) as! Producer
-            newProducer.id = producer_id
-            newProducer.name = producer_name
-            return newProducer
         }
     }
 

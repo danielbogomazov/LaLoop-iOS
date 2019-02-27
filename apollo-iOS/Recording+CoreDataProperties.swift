@@ -21,6 +21,5 @@ extension Recording {
     @NSManaged public var artists: Set<Artist>
     @NSManaged public var labels: Set<Label>
     @NSManaged public var genres: Set<Genre>
-    @NSManaged public var producers: Set<Producer>
 
 }

@@ -19,7 +19,6 @@ public class Util {
         case artist
         case genre
         case label
-        case producer
     }
 
     struct Color {
@@ -31,6 +30,7 @@ public class Util {
     
     struct Constant {
         static let url = "https://apolloios.ddns.net"
+        static let followedArtistsKey = "Followed Artists"
     }
     
     static func getCountdownString(until releaseDate: Date) -> String {
@@ -100,7 +100,6 @@ public class DevelopmentUtil {
         let artists = findMatchFor(entity: .artist) as! [Artist]
         let genres = findMatchFor(entity: .genre) as! [Genre]
         let labels = findMatchFor(entity: .label) as! [Label]
-        let producers = findMatchFor(entity: .producer) as! [Producer]
         
         print("\n== Saved Recordings ==")
         for recording in recordings {
@@ -128,11 +127,6 @@ public class DevelopmentUtil {
             print(label.name)
         }
 
-        print("\n== Saved Producers ==")
-        for producer in producers {
-            print(producer.id)
-            print(producer.name)
-        }
     }
     
     static func deleteSavedCoreData() {
@@ -140,7 +134,6 @@ public class DevelopmentUtil {
         entities.append(contentsOf: findMatchFor(entity: .artist))
         entities.append(contentsOf: findMatchFor(entity: .genre))
         entities.append(contentsOf: findMatchFor(entity: .label))
-        entities.append(contentsOf: findMatchFor(entity: .producer))
 
         for entity in entities {
             AppDelegate.viewContext.delete(entity)
@@ -174,16 +167,8 @@ public class DevelopmentUtil {
             } catch {
                 return []
             }
-        case .label:
-            let request: NSFetchRequest<Label> = Label.fetchRequest()
-            do {
-                let found = try AppDelegate.viewContext.fetch(request)
-                return found
-            } catch {
-                return []
-            }
         default:
-            let request: NSFetchRequest<Producer> = Producer.fetchRequest()
+            let request: NSFetchRequest<Label> = Label.fetchRequest()
             do {
                 let found = try AppDelegate.viewContext.fetch(request)
                 return found

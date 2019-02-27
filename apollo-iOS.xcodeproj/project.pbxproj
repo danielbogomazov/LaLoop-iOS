@@ -11,8 +11,6 @@
 		6523EEAB21CDDBD200EF0333 /* apollo_iOS.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 6523EEA921CDDBD200EF0333 /* apollo_iOS.xcdatamodeld */; };
 		6523EEAD21CDDBD500EF0333 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6523EEAC21CDDBD500EF0333 /* Assets.xcassets */; };
 		6523EEB021CDDBD500EF0333 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6523EEAE21CDDBD500EF0333 /* LaunchScreen.storyboard */; };
-		6523EEC321CDDEC400EF0333 /* Producer+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6523EEB721CDDEC400EF0333 /* Producer+CoreDataClass.swift */; };
-		6523EEC421CDDEC400EF0333 /* Producer+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6523EEB821CDDEC400EF0333 /* Producer+CoreDataProperties.swift */; };
 		6523EEC521CDDEC400EF0333 /* RecordingInformation+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6523EEB921CDDEC400EF0333 /* RecordingInformation+CoreDataClass.swift */; };
 		6523EEC621CDDEC400EF0333 /* RecordingInformation+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6523EEBA21CDDEC400EF0333 /* RecordingInformation+CoreDataProperties.swift */; };
 		6523EEC721CDDEC400EF0333 /* Label+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6523EEBB21CDDEC400EF0333 /* Label+CoreDataClass.swift */; };
@@ -36,8 +34,6 @@
 		6523EEAC21CDDBD500EF0333 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6523EEAF21CDDBD500EF0333 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		6523EEB121CDDBD500EF0333 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		6523EEB721CDDEC400EF0333 /* Producer+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Producer+CoreDataClass.swift"; sourceTree = "<group>"; };
-		6523EEB821CDDEC400EF0333 /* Producer+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Producer+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		6523EEB921CDDEC400EF0333 /* RecordingInformation+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RecordingInformation+CoreDataClass.swift"; sourceTree = "<group>"; };
 		6523EEBA21CDDEC400EF0333 /* RecordingInformation+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RecordingInformation+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		6523EEBB21CDDEC400EF0333 /* Label+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Label+CoreDataClass.swift"; sourceTree = "<group>"; };
@@ -109,7 +105,6 @@
 				6523EEB921CDDEC400EF0333 /* RecordingInformation+CoreDataClass.swift */,
 				6523EEBD21CDDEC400EF0333 /* Recording+CoreDataClass.swift */,
 				6523EEBF21CDDEC400EF0333 /* Artist+CoreDataClass.swift */,
-				6523EEB721CDDEC400EF0333 /* Producer+CoreDataClass.swift */,
 				6523EEC121CDDEC400EF0333 /* Genre+CoreDataClass.swift */,
 				6523EEBB21CDDEC400EF0333 /* Label+CoreDataClass.swift */,
 			);
@@ -122,7 +117,6 @@
 				6523EEBA21CDDEC400EF0333 /* RecordingInformation+CoreDataProperties.swift */,
 				6523EEBE21CDDEC400EF0333 /* Recording+CoreDataProperties.swift */,
 				6523EEC021CDDEC400EF0333 /* Artist+CoreDataProperties.swift */,
-				6523EEB821CDDEC400EF0333 /* Producer+CoreDataProperties.swift */,
 				6523EEC221CDDEC400EF0333 /* Genre+CoreDataProperties.swift */,
 				6523EEBC21CDDEC400EF0333 /* Label+CoreDataProperties.swift */,
 			);
@@ -238,9 +232,7 @@
 				6523EEA321CDDBD200EF0333 /* AppDelegate.swift in Sources */,
 				6523EECB21CDDEC400EF0333 /* Artist+CoreDataClass.swift in Sources */,
 				6523EECC21CDDEC400EF0333 /* Artist+CoreDataProperties.swift in Sources */,
-				6523EEC421CDDEC400EF0333 /* Producer+CoreDataProperties.swift in Sources */,
 				6523EECD21CDDEC400EF0333 /* Genre+CoreDataClass.swift in Sources */,
-				6523EEC321CDDEC400EF0333 /* Producer+CoreDataClass.swift in Sources */,
 				6523EEC921CDDEC400EF0333 /* Recording+CoreDataClass.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
