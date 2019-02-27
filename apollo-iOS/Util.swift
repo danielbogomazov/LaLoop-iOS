@@ -29,6 +29,9 @@ public class Util {
         static let secondaryDark: UIColor = UIColor(red: 38/255, green: 89/255, blue: 97/255, alpha: 1)
     }
     
+    struct Constant {
+        static let url = "https://apolloios.ddns.net"
+    }
     
     static func getCountdownString(until releaseDate: Date) -> String {
         let calendar = NSCalendar.current

@@ -13,6 +13,7 @@ class BrowseViewController: UIViewController {
     
     private var recordingsTableView: UITableView!
     private var recordings: [Recording] = []
+    private lazy var refreshControl = UIRefreshControl()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,7 +39,7 @@ class BrowseViewController: UIViewController {
     
     func getData(completionHandler: @escaping (Bool) -> ()) {
         
-        let url = URL(string: serverIP)! // Left out of repo on purpose -- will add in the future
+        guard let url = URL(string: Util.Constant.url) else { completionHandler(false); return }
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         let session = URLSession(configuration: .ephemeral)
@@ -91,6 +92,19 @@ class BrowseViewController: UIViewController {
         recordingsTableView.delegate = self
         recordingsTableView.dataSource = self
         view.addSubview(recordingsTableView)
+        refreshControl.addTarget(self, action: #selector(ref(_:)), for: .valueChanged)
+        recordingsTableView.refreshControl = refreshControl
+    }
+    
+    @objc func ref(_ sender: UIRefreshControl) {
+        getData(completionHandler: { success in
+            DispatchQueue.main.async {
+                if success {
+                    self.reloadTableView()
+                }
+                self.refreshControl.endRefreshing()
+            }
+        })
     }
     
     func populateRecordings() {

@@ -4,9 +4,6 @@
 
 *.DS_Store
 
-## Temp files
-ServerIP.swift
-
 ## Build generated
 build/
 DerivedData/
