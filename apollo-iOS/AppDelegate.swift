@@ -20,7 +20,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var browseNavController = UINavigationController()
     var browseViewController = BrowseViewController()
     
+    var followingNavController = UINavigationController()
+    var followingViewController = FollowingViewController()
     
+    static var recordings: [Recording] = []
+
     static var persistentContainer: NSPersistentContainer {
         return (UIApplication.shared.delegate as! AppDelegate).persistentContainer
     }
@@ -29,17 +33,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        
+                
         browseViewController.title = "apollo"
-            
+        followingViewController.title = "following"
+        
+        browseViewController.followingViewController = followingViewController
+        followingViewController.browseViewController = browseViewController
+        
         browseNavController.title = "Browse"
         browseNavController.navigationBar.barStyle = .blackOpaque
         browseNavController.navigationBar.tintColor = UIColor.white
         browseNavController.viewControllers = [browseViewController]
+        browseNavController.restorationIdentifier = "browseNavController"
+        
+        followingNavController.title = "Following"
+        followingNavController.navigationBar.barStyle = .blackOpaque
+        followingNavController.navigationBar.tintColor = UIColor.white
+        followingNavController.viewControllers = [followingViewController]
+        followingViewController.restorationIdentifier = "followingNavController"
         
         tabBarController.tabBar.barStyle = .blackOpaque
         tabBarController.tabBar.tintColor = UIColor.white
-        tabBarController.viewControllers = [browseNavController]
+        tabBarController.viewControllers = [browseNavController, followingNavController]
         
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.rootViewController = tabBarController

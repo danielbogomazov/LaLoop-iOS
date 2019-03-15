@@ -12,8 +12,9 @@ import CoreData
 class BrowseViewController: UIViewController {
     
     private var recordingsTableView: UITableView!
-    private var recordings: [Recording] = []
     private lazy var refreshControl = UIRefreshControl()
+    
+    var followingViewController: FollowingViewController!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,6 +26,7 @@ class BrowseViewController: UIViewController {
         getData(completionHandler: { success in
             DispatchQueue.main.async {
                 if success {
+                    self.populateRecordings()
                     self.reloadTableView()
                 } else {
                     // TODO - Load from cache?
@@ -33,10 +35,15 @@ class BrowseViewController: UIViewController {
         })
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+    override func viewWillAppear(_ animated: Bool) {
+        reloadTableView()
     }
     
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+
     func getData(completionHandler: @escaping (Bool) -> ()) {
         
         guard let url = URL(string: Util.Constant.url) else { completionHandler(false); return }
@@ -72,11 +79,6 @@ class BrowseViewController: UIViewController {
         task.resume()
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
     func setupTableView() {
         
         // Safe Area
@@ -87,8 +89,6 @@ class BrowseViewController: UIViewController {
 
         recordingsTableView = UITableView(frame: frame, style: .grouped)
         recordingsTableView.backgroundColor = Util.Color.backgroundColor
-        recordingsTableView.estimatedRowHeight = 100
-        recordingsTableView.rowHeight = 100
         recordingsTableView.delegate = self
         recordingsTableView.dataSource = self
         view.addSubview(recordingsTableView)
@@ -112,8 +112,8 @@ class BrowseViewController: UIViewController {
         request.sortDescriptors = [NSSortDescriptor(key: "release_date", ascending: true)]
         request.predicate = NSPredicate(format: "release_date >= %@ OR release_date == nil", Date() as NSDate)
         do {
-            recordings = try AppDelegate.viewContext.fetch(request)
-            recordings.sort {
+            AppDelegate.recordings = try AppDelegate.viewContext.fetch(request)
+            AppDelegate.recordings.sort {
                 guard let first = $0.release_date, let second = $1.release_date else {
                     return ($0.release_date != nil && $1.release_date == nil) }
                 return first < second
@@ -124,8 +124,9 @@ class BrowseViewController: UIViewController {
     }
 
     func reloadTableView() {
-        populateRecordings()
-        recordingsTableView.reloadData()
+        DispatchQueue.main.async {
+            self.recordingsTableView.reloadData()
+        }
     }
 }
 
@@ -133,54 +134,50 @@ class BrowseViewController: UIViewController {
 extension BrowseViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 100
+        return Util.Constant.cellHeight
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return recordings.count
+        return AppDelegate.recordings.count
+    }
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return "upcoming"
+    }
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        return RecordingTableViewCell(recording: recordings[indexPath.row])
+        return RecordingCell(recording: AppDelegate.recordings[indexPath.row])
     }
     
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         
-        let cell = tableView.cellForRow(at: indexPath) as! RecordingTableViewCell
+        if UserDefaults.standard.array(forKey: Util.Constant.followedArtistsKey) == nil {
+            UserDefaults.standard.set([], forKey: Util.Constant.followedArtistsKey)
+        }
+
+        guard var followedArtists = UserDefaults.standard.array(forKey: Util.Constant.followedArtistsKey) as? [String] else { return [] }
+        let cell = tableView.cellForRow(at: indexPath) as! RecordingCell
         guard let artistID = cell.recording.artists.first?.id else { return [] }
-        
-        // TODO : Clean up the below code
-                
-        if var followedArtists = UserDefaults.standard.array(forKey: Util.Constant.followedArtistsKey) as? [String] {
-            if followedArtists.contains(artistID), let index = followedArtists.firstIndex(of: artistID) {
-                let unfollow = UITableViewRowAction(style: .default, title: "Unfollow") { (_, _) in
-                    followedArtists.remove(at: index)
-                    UserDefaults.standard.set(followedArtists, forKey: Util.Constant.followedArtistsKey)
-                    LocalNotif.removeRecording(id: artistID)
-                    cell.updateButtonImage()
-                }
-                unfollow.backgroundColor = Util.Color.secondaryDark
-                return [unfollow]
-            } else {
-                let follow = UITableViewRowAction(style: .default, title: "Follow") { (_, _) in
-                    followedArtists.append(artistID)
-                    UserDefaults.standard.set(followedArtists, forKey: Util.Constant.followedArtistsKey)
-                    LocalNotif.createNewRecording(recording: cell.recording, completionHandler: { (success, error) in
-                        if let e = error {
-                            print(e.localizedDescription)
-                        }
-                        if !success {
-                            // TODO
-                        }
-                        cell.updateButtonImage()
-                    })
-                }
-                follow.backgroundColor = Util.Color.secondary
-                return [follow]
+
+        if let index = followedArtists.firstIndex(of: artistID) {
+            let unfollow = UITableViewRowAction(style: .default, title: "Unfollow") { (_, _) in
+                followedArtists.remove(at: index)
+                UserDefaults.standard.set(followedArtists, forKey: Util.Constant.followedArtistsKey)
+                LocalNotif.removeRecording(id: artistID)
+                self.reloadTableView()
+                cell.updateButtonImage()
             }
+            unfollow.backgroundColor = Util.Color.secondaryDark
+            return [unfollow]
+
         } else {
             let follow = UITableViewRowAction(style: .default, title: "Follow") { (_, _) in
-                UserDefaults.standard.set([artistID], forKey: Util.Constant.followedArtistsKey)
+                followedArtists.append(artistID)
+                UserDefaults.standard.set(followedArtists, forKey: Util.Constant.followedArtistsKey)
                 LocalNotif.createNewRecording(recording: cell.recording, completionHandler: { (success, error) in
                     if let e = error {
                         print(e.localizedDescription)
@@ -188,6 +185,7 @@ extension BrowseViewController: UITableViewDelegate, UITableViewDataSource {
                     if !success {
                         // TODO
                     }
+                    self.reloadTableView()
                     cell.updateButtonImage()
                 })
             }
@@ -197,16 +195,13 @@ extension BrowseViewController: UITableViewDelegate, UITableViewDataSource {
     }
 }
 
-class RecordingTableViewCell: UITableViewCell {
+class RecordingCell: UITableViewCell {
     private let followingButton = UIButton()
     private let dateLabel = UILabel()
     private let recordingLabel = UILabel()
     private let artistLabel = UILabel()
     private var recordingObj: Recording!
     
-    private let margin: CGFloat = 8.0
-    private let labelMargin: CGFloat = 2.0
-
     var releaseDate: String {
         get { return dateLabel.text! }
     }
@@ -219,37 +214,51 @@ class RecordingTableViewCell: UITableViewCell {
     var recording: Recording {
         get { return recordingObj }
     }
+    var bgColor: UIColor? {
+        get { return backgroundColor }
+        set { backgroundColor = newValue }
+    }
     
-    init(recording: Recording) {
-        super.init(style: .default, reuseIdentifier: "recordingTableViewCell")
+    init(recording: Recording, excludeArtist: Bool = false, excludeFollowingButton: Bool = false) {
+        super.init(style: .default, reuseIdentifier: "recordingCell")
 
         recordingObj = recording
 
         backgroundColor = UIColor.clear
         selectionStyle = .none
-
-        let margin: CGFloat = 20
-        let imageSize: CGFloat = 60.0
         
-        followingButton.frame = CGRect(x: margin, y: margin, width: margin, height: margin)
-        followingButton.contentMode = .scaleAspectFill
-        followingButton.clipsToBounds = true
-        updateButtonImage()
+        if !excludeFollowingButton {
+            followingButton.frame = CGRect(x: Util.Constant.cellMargin, y: Util.Constant.cellMargin, width: Util.Constant.cellMargin, height: Util.Constant.cellMargin)
+            followingButton.contentMode = .scaleAspectFill
+            followingButton.clipsToBounds = true
+            updateButtonImage()
+        }
 
-        let labelX = followingButton.frame.maxX + margin
+        let labelX = excludeFollowingButton ? Util.Constant.cellMargin : followingButton.frame.maxX + Util.Constant.cellMargin
         let labelWidth = contentView.frame.width - labelX
-        artistLabel.frame = CGRect(x: labelX, y: followingButton.frame.origin.y, width: labelWidth, height: imageSize * 0.5)
-        recordingLabel.frame = CGRect(x: labelX, y: artistLabel.frame.maxY, width: labelWidth, height: imageSize * 0.5 * 0.60)
-        dateLabel.frame = CGRect(x: labelX, y: recordingLabel.frame.maxY, width: labelWidth, height: imageSize * 0.5 * 0.40)
         
-        setupLabel(artistLabel, fontWeight: .black, textColor: Util.Color.main)
-        setupLabel(recordingLabel, fontWeight: .heavy)
-        setupLabel(dateLabel, fontWeight: .regular)
+        if !excludeArtist {
+            artistLabel.frame = CGRect(x: labelX, y: Util.Constant.cellMargin, width: labelWidth, height: Util.Constant.cellContentHeight * 0.5)
+            artistLabel.setupLabel(fontWeight: .black, textColor: Util.Color.main)
+            for (index, artist) in recording.artists.enumerated() {
+                artistLabel.text = index > 0 ? "\(artistLabel.text!) & \(artist.name!)" : artist.name
+            }
+        }
+        
+        let recordingLabelY = excludeArtist ? Util.Constant.cellMargin : artistLabel.frame.maxY
+        let recordingLabelHeight = excludeArtist ? Util.Constant.cellContentHeight * 0.8 : Util.Constant.cellContentHeight * 0.5 * 0.6
+        let dateLabelHeight = excludeArtist ? Util.Constant.cellContentHeight * 0.2 : Util.Constant.cellContentHeight * 0.5 * 0.4
+
+        recordingLabel.frame = CGRect(x: labelX, y: recordingLabelY, width: labelWidth, height: recordingLabelHeight)
+        recordingLabel.setupLabel(fontWeight: .heavy)
+
+        dateLabel.frame = CGRect(x: labelX, y: recordingLabel.frame.maxY, width: labelWidth, height: dateLabelHeight)
+        dateLabel.setupLabel(fontWeight: .regular)
 
         addSubview(followingButton)
-        addSubview(dateLabel)
-        addSubview(recordingLabel)
         addSubview(artistLabel)
+        addSubview(recordingLabel)
+        addSubview(dateLabel)
         
         recordingLabel.text = recording.name
         dateLabel.text = "TBA"
@@ -269,26 +278,16 @@ class RecordingTableViewCell: UITableViewCell {
                 }
             }
         }
-        for (index, artist) in recording.artists.enumerated() {
-            artistLabel.text = index > 0 ? "\(artistLabel.text!) & \(artist.name!)" : artist.name
-        }
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func setupLabel(_ label: UILabel, fontWeight: UIFont.Weight, textColor: UIColor = UIColor.white) {
-        label.font = UIFont.monospacedDigitSystemFont(ofSize: label.bounds.height, weight: fontWeight)
-        label.textColor = textColor
-        label.baselineAdjustment = .alignCenters
-        label.adjustsFontSizeToFitWidth = true
-    }
-    
     func updateButtonImage() {
         DispatchQueue.main.async {
             if let artistID = self.recording.artists.first?.id,
-                let artists = UserDefaults.standard.array(forKey: "Followed Artists") as? [String],
+                let artists = UserDefaults.standard.array(forKey: Util.Constant.followedArtistsKey) as? [String],
                 artists.contains(artistID) {
                 self.followingButton.setImage(UIImage(named: "Followed"), for: .normal)
             } else {
