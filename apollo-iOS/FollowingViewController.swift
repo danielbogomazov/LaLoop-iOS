@@ -63,6 +63,8 @@ class FollowingViewController: UIViewController {
     func populateArtists() {
         
         guard let followedArtists = UserDefaults.standard.array(forKey: Util.Constant.followedArtistsKey) as? [String] else { return }
+        
+        artists.removeAll()
 
         let request: NSFetchRequest<Artist> = Artist.fetchRequest()
         request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
@@ -74,9 +76,7 @@ class FollowingViewController: UIViewController {
         do {
             let artistsArray = try AppDelegate.viewContext.fetch(request)
             for a in artistsArray {
-                if !artists.contains(where: { $0.obj == a }) {
-                    artists.append(artistStruct(obj: a, isOpen: false))
-                }
+                artists.append(artistStruct(obj: a, isOpen: false))
             }
         } catch let error as NSError {
             print("Could not fetch. \(error), \(error.userInfo)")

@@ -152,42 +152,28 @@ extension BrowseViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         return RecordingCell(recording: AppDelegate.recordings[indexPath.row])
     }
-    
+        
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         
         if UserDefaults.standard.array(forKey: Util.Constant.followedArtistsKey) == nil {
             UserDefaults.standard.set([], forKey: Util.Constant.followedArtistsKey)
         }
-
-        guard var followedArtists = UserDefaults.standard.array(forKey: Util.Constant.followedArtistsKey) as? [String] else { return [] }
+        
+        guard let followedArtists = UserDefaults.standard.array(forKey: Util.Constant.followedArtistsKey) as? [String] else { return [] }
         let cell = tableView.cellForRow(at: indexPath) as! RecordingCell
         guard let artistID = cell.recording.artists.first?.id else { return [] }
 
-        if let index = followedArtists.firstIndex(of: artistID) {
+        if followedArtists.contains(artistID) {
             let unfollow = UITableViewRowAction(style: .default, title: "Unfollow") { (_, _) in
-                followedArtists.remove(at: index)
-                UserDefaults.standard.set(followedArtists, forKey: Util.Constant.followedArtistsKey)
-                LocalNotif.removeRecording(id: artistID)
-                self.reloadTableView()
+                Util.unfollowArtist(id: artistID)
                 cell.updateButtonImage()
             }
             unfollow.backgroundColor = Util.Color.secondaryDark
             return [unfollow]
-
         } else {
             let follow = UITableViewRowAction(style: .default, title: "Follow") { (_, _) in
-                followedArtists.append(artistID)
-                UserDefaults.standard.set(followedArtists, forKey: Util.Constant.followedArtistsKey)
-                LocalNotif.createNewRecording(recording: cell.recording, completionHandler: { (success, error) in
-                    if let e = error {
-                        print(e.localizedDescription)
-                    }
-                    if !success {
-                        // TODO
-                    }
-                    self.reloadTableView()
-                    cell.updateButtonImage()
-                })
+                Util.followArtist(id: artistID, recording: cell.recording)
+                cell.updateButtonImage()
             }
             follow.backgroundColor = Util.Color.secondary
             return [follow]
@@ -201,6 +187,7 @@ class RecordingCell: UITableViewCell {
     private let recordingLabel = UILabel()
     private let artistLabel = UILabel()
     private var recordingObj: Recording!
+    private var artist: Artist?
     
     var releaseDate: String {
         get { return dateLabel.text! }
@@ -231,6 +218,7 @@ class RecordingCell: UITableViewCell {
             followingButton.frame = CGRect(x: Util.Constant.cellMargin, y: Util.Constant.cellMargin, width: Util.Constant.cellMargin, height: Util.Constant.cellMargin)
             followingButton.contentMode = .scaleAspectFill
             followingButton.clipsToBounds = true
+            followingButton.addTarget(self, action: #selector(followingButtonPressed(_:)), for: .touchUpInside)
             updateButtonImage()
         }
 
@@ -240,9 +228,8 @@ class RecordingCell: UITableViewCell {
         if !excludeArtist {
             artistLabel.frame = CGRect(x: labelX, y: Util.Constant.cellMargin, width: labelWidth, height: Util.Constant.cellContentHeight * 0.5)
             artistLabel.setupLabel(fontWeight: .black, fontSize: 24.0, textColor: Util.Color.main)
-            for (index, artist) in recording.artists.enumerated() {
-                artistLabel.text = index > 0 ? "\(artistLabel.text!) & \(artist.name!)" : artist.name
-            }
+            artist = recording.artists.first
+            artistLabel.text = artist?.name
         }
         
         let margin: CGFloat = 2.0
@@ -298,5 +285,17 @@ class RecordingCell: UITableViewCell {
                 self.followingButton.setImage(UIImage(named: "NotFollowed"), for: .normal)
             }
         }
+    }
+    
+    @objc func followingButtonPressed(_ sender: UIButton) {
+        guard let followedArtists = UserDefaults.standard.array(forKey: Util.Constant.followedArtistsKey) as? [String] else { return }
+        guard let id = artist?.id else { return }
+        
+        if followedArtists.contains(id) {
+            Util.unfollowArtist(id: id)
+        } else {
+            Util.followArtist(id: id, recording: recording)
+        }
+        updateButtonImage()
     }
 }

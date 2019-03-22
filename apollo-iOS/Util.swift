@@ -97,6 +97,38 @@ public class Util {
         newString = newString.replacingOccurrences(of: "&copy;", with: "®", options: .literal, range: nil)
         return newString
     }
+    
+    /// Removes an artist from the following list
+    ///
+    /// - Parameter id: ID of the artist to unfollow
+    static func unfollowArtist(id: String) {
+        guard var followedArtists = UserDefaults.standard.array(forKey: Util.Constant.followedArtistsKey) as? [String] else { return }
+        guard let index = followedArtists.firstIndex(of: id) else { return }
+        
+        followedArtists.remove(at: index)
+        UserDefaults.standard.set(followedArtists, forKey: Util.Constant.followedArtistsKey)
+        LocalNotif.removeRecording(id: id)
+    }
+    
+    /// Add an artist to the following list
+    ///
+    /// - Parameters:
+    ///   - id: ID of the artist to follow
+    ///   - recording: Recording for which the notification will be made for
+    static func followArtist(id: String, recording: Recording) {
+        guard var followedArtists = UserDefaults.standard.array(forKey: Util.Constant.followedArtistsKey) as? [String] else { return }
+        
+        followedArtists.append(id)
+        UserDefaults.standard.set(followedArtists, forKey: Util.Constant.followedArtistsKey)
+        LocalNotif.createNewRecording(recording: recording, completionHandler: { (success, error) in
+            if let e = error {
+                print(e.localizedDescription)
+            }
+            if !success {
+                // TODO
+            }
+        })
+    }
 }
 
 public class DevelopmentUtil {
