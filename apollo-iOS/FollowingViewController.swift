@@ -74,7 +74,9 @@ class FollowingViewController: UIViewController {
         do {
             let artistsArray = try AppDelegate.viewContext.fetch(request)
             for a in artistsArray {
-                artists.append(artistStruct(obj: a, isOpen: false))
+                if !artists.contains(where: { $0.obj == a }) {
+                    artists.append(artistStruct(obj: a, isOpen: false))
+                }
             }
         } catch let error as NSError {
             print("Could not fetch. \(error), \(error.userInfo)")
