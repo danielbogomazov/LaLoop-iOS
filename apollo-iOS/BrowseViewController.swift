@@ -142,7 +142,7 @@ extension BrowseViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return "upcoming"
+        return "upcoming recordings"
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -239,21 +239,25 @@ class RecordingCell: UITableViewCell {
         
         if !excludeArtist {
             artistLabel.frame = CGRect(x: labelX, y: Util.Constant.cellMargin, width: labelWidth, height: Util.Constant.cellContentHeight * 0.5)
-            artistLabel.setupLabel(fontWeight: .black, textColor: Util.Color.main)
+            artistLabel.setupLabel(fontWeight: .black, fontSize: 24.0, textColor: Util.Color.main)
             for (index, artist) in recording.artists.enumerated() {
                 artistLabel.text = index > 0 ? "\(artistLabel.text!) & \(artist.name!)" : artist.name
             }
         }
         
-        let recordingLabelY = excludeArtist ? Util.Constant.cellMargin : artistLabel.frame.maxY
-        let recordingLabelHeight = excludeArtist ? Util.Constant.cellContentHeight * 0.8 : Util.Constant.cellContentHeight * 0.5 * 0.6
-        let dateLabelHeight = excludeArtist ? Util.Constant.cellContentHeight * 0.2 : Util.Constant.cellContentHeight * 0.5 * 0.4
+        let margin: CGFloat = 2.0
+        let recordingLabelY = excludeArtist ? Util.Constant.cellMargin : artistLabel.frame.maxY + margin
+        let recordingLabelHeight = excludeArtist ? Util.Constant.cellContentHeight * 0.6 : Util.Constant.cellContentHeight * 0.5 * 0.6 - margin
+        let dateLabelHeight = excludeArtist ? Util.Constant.cellContentHeight * 0.4 : Util.Constant.cellContentHeight * 0.5 * 0.4 - margin
 
         recordingLabel.frame = CGRect(x: labelX, y: recordingLabelY, width: labelWidth, height: recordingLabelHeight)
-        recordingLabel.setupLabel(fontWeight: .heavy)
+        dateLabel.frame = CGRect(x: labelX, y: recordingLabel.frame.maxY + margin, width: labelWidth, height: dateLabelHeight)
 
-        dateLabel.frame = CGRect(x: labelX, y: recordingLabel.frame.maxY, width: labelWidth, height: dateLabelHeight)
-        dateLabel.setupLabel(fontWeight: .regular)
+        let recordingLabelFontSize: CGFloat = excludeArtist ? 28.0 : 14.0
+        recordingLabel.setupLabel(fontWeight: .heavy, fontSize: recordingLabelFontSize)
+
+        let dateLabelFontSize: CGFloat = excludeArtist ? 20.0 : 10.0
+        dateLabel.setupLabel(fontWeight: .regular, fontSize: dateLabelFontSize)
 
         addSubview(followingButton)
         addSubview(artistLabel)

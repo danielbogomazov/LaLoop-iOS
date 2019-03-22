@@ -9,10 +9,10 @@
 import UIKit
 
 extension UILabel {
-    func setupLabel(fontWeight: UIFont.Weight, textColor: UIColor = UIColor.white) {
-        font = UIFont.monospacedDigitSystemFont(ofSize: bounds.height, weight: fontWeight)
+    func setupLabel(fontWeight: UIFont.Weight, fontSize: CGFloat, textColor: UIColor = UIColor.white) {
+        font = UIFont.monospacedDigitSystemFont(ofSize: fontSize, weight: fontWeight)
         self.textColor = textColor
-        baselineAdjustment = .alignCenters
         adjustsFontSizeToFitWidth = true
+        baselineAdjustment = .alignCenters
     }
 }

@@ -150,12 +150,13 @@ class ArtistCell: UITableViewCell {
         backgroundColor = Util.Color.backgroundColor
         selectionStyle = .none
 
+        let margin: CGFloat = 2.0
         let labelWidth = contentView.frame.width
         artistLabel.frame = CGRect(x: Util.Constant.sectionMargin, y: Util.Constant.sectionMargin + Util.Constant.sectionContentHeight * 0.1, width: labelWidth, height: Util.Constant.sectionContentHeight * 0.5)
-        recordingsLabel.frame = CGRect(x: Util.Constant.sectionMargin, y: artistLabel.frame.maxY, width: labelWidth, height: Util.Constant.sectionContentHeight * 0.3)
+        recordingsLabel.frame = CGRect(x: Util.Constant.sectionMargin, y: artistLabel.frame.maxY + margin, width: labelWidth, height: Util.Constant.sectionContentHeight * 0.3 - margin)
         
-        artistLabel.setupLabel(fontWeight: .black, textColor: Util.Color.main)
-        recordingsLabel.setupLabel(fontWeight: .regular)
+        artistLabel.setupLabel(fontWeight: .black, fontSize: 18.0, textColor: Util.Color.main)
+        recordingsLabel.setupLabel(fontWeight: .regular, fontSize: 9.0)
         
         artistLabel.text = artist.name
         let numRecordings = artist.recordings.count
