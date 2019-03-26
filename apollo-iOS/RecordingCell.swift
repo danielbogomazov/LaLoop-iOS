@@ -44,7 +44,7 @@ class RecordingCell: UITableViewCell {
         set { artistLabel.setupLabel(fontWeight: .black, fontSize: newValue, textColor: Util.Color.main) }
     }
     
-    init(recording: Recording, excludeArtist: Bool = false, excludeFollowingButton: Bool = false) {
+    init(recording: Recording, excludeFollowingButton: Bool = false, excludeArtist: Bool = false, excludeRecording: Bool = false) {
         super.init(style: .default, reuseIdentifier: "recordingCell")
         
         recordingObj = recording
@@ -76,31 +76,35 @@ class RecordingCell: UITableViewCell {
         if !excludeArtist {
             wrapperView.addSubview(artistLabel)
             artistLabel.translatesAutoresizingMaskIntoConstraints = false
+            let heightMultiplier: CGFloat = excludeRecording ? 0.5 : 0.4
             wrapperView.addConstraints([NSLayoutConstraint(item: artistLabel, attribute: .top, relatedBy: .equal, toItem: wrapperView, attribute: .top, multiplier: 1.0, constant: 0),
                                         NSLayoutConstraint(item: artistLabel, attribute: .left, relatedBy: .equal, toItem: wrapperView, attribute: .left, multiplier: 1.0, constant: 0),
                                         NSLayoutConstraint(item: artistLabel, attribute: .right, relatedBy: .equal, toItem: wrapperView, attribute: .right, multiplier: 1.0, constant: 0),
-                                        NSLayoutConstraint(item: artistLabel, attribute: .height, relatedBy: .equal, toItem: wrapperView, attribute: .height, multiplier: 0.4, constant: 0)])
+                                        NSLayoutConstraint(item: artistLabel, attribute: .height, relatedBy: .equal, toItem: wrapperView, attribute: .height, multiplier: heightMultiplier, constant: 0)])
             artistLabel.setupLabel(fontWeight: .black, fontSize: artistLabel.font.pointSize, textColor: Util.Color.main)
             artistLabel.text = recordingObj.artists.first?.name ?? "Unknown Artist"
         }
         
-        let heightMultiplier: CGFloat = excludeArtist ? 0.5 : 0.3
+        let heightMultiplier: CGFloat = (excludeArtist && excludeRecording) ? 1.0 : (excludeArtist || excludeRecording) ? 0.5 : 0.3
 
-        wrapperView.addSubview(recordingLabel)
-        recordingLabel.translatesAutoresizingMaskIntoConstraints = false
-        let topItem = excludeArtist ? wrapperView : artistLabel
-        let topAttribute: NSLayoutConstraint.Attribute = excludeArtist ? .top : .bottom
-        wrapperView.addConstraints([NSLayoutConstraint(item: recordingLabel, attribute: .top, relatedBy: .equal, toItem: topItem, attribute: topAttribute, multiplier: 1.0, constant: 0),
-                                    NSLayoutConstraint(item: recordingLabel, attribute: .left, relatedBy: .equal, toItem: wrapperView, attribute: .left, multiplier: 1.0, constant: 0),
-                                    NSLayoutConstraint(item: recordingLabel, attribute: .right, relatedBy: .equal, toItem: wrapperView, attribute: .right, multiplier: 1.0, constant: 0),
-                                    NSLayoutConstraint(item: recordingLabel, attribute: .height, relatedBy: .equal, toItem: wrapperView, attribute: .height, multiplier: heightMultiplier, constant: 0)])
-        recordingLabel.setupLabel(fontWeight: .heavy, fontSize: recordingLabel.font.pointSize)
-        recordingLabel.text = recording.name
-        
+        if !excludeRecording {
+            wrapperView.addSubview(recordingLabel)
+            recordingLabel.translatesAutoresizingMaskIntoConstraints = false
+            let topItem = excludeArtist ? wrapperView : artistLabel
+            let topAttribute: NSLayoutConstraint.Attribute = excludeArtist ? .top : .bottom
+            wrapperView.addConstraints([NSLayoutConstraint(item: recordingLabel, attribute: .top, relatedBy: .equal, toItem: topItem, attribute: topAttribute, multiplier: 1.0, constant: 0),
+                                        NSLayoutConstraint(item: recordingLabel, attribute: .left, relatedBy: .equal, toItem: wrapperView, attribute: .left, multiplier: 1.0, constant: 0),
+                                        NSLayoutConstraint(item: recordingLabel, attribute: .right, relatedBy: .equal, toItem: wrapperView, attribute: .right, multiplier: 1.0, constant: 0),
+                                        NSLayoutConstraint(item: recordingLabel, attribute: .height, relatedBy: .equal, toItem: wrapperView, attribute: .height, multiplier: heightMultiplier, constant: 0)])
+            recordingLabel.setupLabel(fontWeight: .heavy, fontSize: recordingLabel.font.pointSize)
+            recordingLabel.text = recording.name
+        }
         
         wrapperView.addSubview(dateLabel)
         dateLabel.translatesAutoresizingMaskIntoConstraints = false
-        wrapperView.addConstraints([NSLayoutConstraint(item: dateLabel, attribute: .top, relatedBy: .equal, toItem: recordingLabel, attribute: .bottom, multiplier: 1.0, constant: 0),
+        let topItem = !excludeRecording ? recordingLabel : !excludeArtist ? artistLabel : wrapperView
+        let topAttribute: NSLayoutConstraint.Attribute = (!excludeRecording || !excludeArtist) ? .bottom : .top
+        wrapperView.addConstraints([NSLayoutConstraint(item: dateLabel, attribute: .top, relatedBy: .equal, toItem: topItem, attribute: topAttribute, multiplier: 1.0, constant: 0),
                                     NSLayoutConstraint(item: dateLabel, attribute: .left, relatedBy: .equal, toItem: wrapperView, attribute: .left, multiplier: 1.0, constant: 0),
                                     NSLayoutConstraint(item: dateLabel, attribute: .right, relatedBy: .equal, toItem: wrapperView, attribute: .right, multiplier: 1.0, constant: 0),
                                     NSLayoutConstraint(item: dateLabel, attribute: .height, relatedBy: .equal, toItem: wrapperView, attribute: .height, multiplier: heightMultiplier, constant: 0)])
