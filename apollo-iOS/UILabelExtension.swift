@@ -14,5 +14,7 @@ extension UILabel {
         self.textColor = textColor
         adjustsFontSizeToFitWidth = true
         baselineAdjustment = .alignCenters
+        numberOfLines = 0
+        lineBreakMode = .byTruncatingTail
     }
 }

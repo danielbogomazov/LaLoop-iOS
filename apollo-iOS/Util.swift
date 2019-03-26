@@ -34,9 +34,6 @@ public class Util {
         static let sectionHeight: CGFloat = 60.0
         static let sectionMargin: CGFloat = 10.0
         static let sectionContentHeight: CGFloat = 40.0
-        static let cellHeight: CGFloat = 100.0
-        static let cellMargin: CGFloat = 20.0
-        static let cellContentHeight: CGFloat = 60.0
     }
     
     static func getCountdownString(until releaseDate: Date) -> String {

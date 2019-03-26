@@ -91,7 +91,7 @@ extension FollowingViewController: UITableViewDelegate, UITableViewDataSource {
         if indexPath.row == 0 {
             return Util.Constant.sectionHeight
         } else {
-            return Util.Constant.cellHeight
+            return 65
         }
     }
     
@@ -128,6 +128,8 @@ extension FollowingViewController: UITableViewDelegate, UITableViewDataSource {
         } else {
             let recordings = Array(artists[indexPath.section].obj.recordings)
             let cell = RecordingCell(recording: recordings[indexPath.row - 1], excludeArtist: true, excludeFollowingButton: true)
+            cell.recordingLabelFontSize = 20.0
+            cell.dateLabelFontSize = 16.0
             cell.bgColor = UIColor.white.withAlphaComponent(0.05)
             return cell
         }
