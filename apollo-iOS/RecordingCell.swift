@@ -109,10 +109,9 @@ class RecordingCell: UITableViewCell {
                                     NSLayoutConstraint(item: dateLabel, attribute: .right, relatedBy: .equal, toItem: wrapperView, attribute: .right, multiplier: 1.0, constant: 0),
                                     NSLayoutConstraint(item: dateLabel, attribute: .height, relatedBy: .equal, toItem: wrapperView, attribute: .height, multiplier: heightMultiplier, constant: 0)])
         dateLabel.setupLabel(fontWeight: .regular, fontSize: dateLabel.font.pointSize)
-        if let date = recording.release_date, let years = Calendar.current.dateComponents([.year], from: Calendar.current.startOfDay(for: Date()), to: Calendar.current.startOfDay(for: date)).year {
+        if let date = recording.release_date {
             let formatter = DateFormatter()
-            // TODO : years > 1000 is pretty hackish but it will do until the TBA standard is changed from the backend
-            if years > 1000 {
+            if Util.isTBA(date: date) {
                 let newDate = Calendar.current.date(byAdding: .year, value: -1999, to: date)
                 formatter.dateFormat = "MMMM YYYY"
                 dateLabel.text = formatter.string(from: newDate ?? date)

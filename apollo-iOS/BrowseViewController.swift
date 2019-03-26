@@ -114,8 +114,15 @@ class BrowseViewController: UIViewController {
         do {
             AppDelegate.recordings = try AppDelegate.viewContext.fetch(request)
             AppDelegate.recordings.sort {
-                guard let first = $0.release_date, let second = $1.release_date else {
-                    return ($0.release_date != nil && $1.release_date == nil) }
+                
+                guard var first = $0.release_date, var second = $1.release_date else { return ($0.release_date != nil && $1.release_date == nil )}
+                
+                if Util.isTBA(date: first) {
+                    first = Calendar.current.date(byAdding: .year, value: -1999, to: first) ?? first
+                }
+                if Util.isTBA(date: second) {
+                    second = Calendar.current.date(byAdding: .year, value: -1999, to: second) ?? second
+                }
                 return first < second
             }
         } catch let error as NSError {

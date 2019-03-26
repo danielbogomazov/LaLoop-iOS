@@ -123,6 +123,12 @@ public class Util {
             }
         })
     }
+    
+    static func isTBA(date: Date) -> Bool {
+        guard let years = Calendar.current.dateComponents([.year], from: Calendar.current.startOfDay(for: Date()), to: Calendar.current.startOfDay(for: date)).year else { return false }
+        // TODO : years > 1000 is pretty hackish but it will do until the TBA standard is changed from the backend
+        return years > 1000 ? true :  false
+    }
 }
 
 public class DevelopmentUtil {
