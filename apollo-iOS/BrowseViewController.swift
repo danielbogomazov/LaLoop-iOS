@@ -172,7 +172,7 @@ extension BrowseViewController: UITableViewDelegate, UITableViewDataSource {
                 Util.unfollowArtist(id: artistID)
                 cell.updateButtonImage()
             }
-            unfollow.backgroundColor = Util.Color.secondaryDark
+            unfollow.backgroundColor = UIColor.red
             return [unfollow]
         } else {
             let follow = UITableViewRowAction(style: .default, title: "Follow") { (_, _) in
