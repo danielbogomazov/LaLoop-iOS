@@ -11,10 +11,10 @@ import CoreData
 
 class BrowseViewController: UIViewController {
     
-    private var recordingsTableView: UITableView!
+    private lazy var recordingsTableView = UITableView()
+    private lazy var searchBar = UISearchBar()
     private lazy var refreshControl = UIRefreshControl()
-    
-    var followingViewController: FollowingViewController!
+    private var filteredRecordings: [Recording] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,9 +33,12 @@ class BrowseViewController: UIViewController {
                 }
             }
         })
+        
+        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard)))
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         reloadTableView()
     }
     
@@ -80,18 +83,18 @@ class BrowseViewController: UIViewController {
     }
     
     func setupTableView() {
-        
-        // Safe Area
-        let y: CGFloat = navigationController?.navigationBar.frame.maxY ?? 0
-        let height: CGFloat = view.frame.height - y - (tabBarController?.tabBar.frame.height ?? 0)
-        
-        let frame = CGRect(x: 0, y: y, width: view.bounds.width, height: height)
-
-        recordingsTableView = UITableView(frame: frame, style: .grouped)
+        recordingsTableView = UITableView(frame: CGRect(), style: .plain)
+        view.addSubview(recordingsTableView)
+        recordingsTableView.translatesAutoresizingMaskIntoConstraints = false
+        let top = navigationController?.navigationBar.frame.maxY ?? 0.0
+        let bottom = tabBarController?.tabBar.frame.height ?? 0.0
+        view.addConstraints([NSLayoutConstraint(item: recordingsTableView, attribute: .top, relatedBy: .equal, toItem: view, attribute: .top, multiplier: 1.0, constant: top),
+                             NSLayoutConstraint(item: recordingsTableView, attribute: .left, relatedBy: .equal, toItem: view, attribute: .left, multiplier: 1.0, constant: 0),
+                             NSLayoutConstraint(item: recordingsTableView, attribute: .right, relatedBy: .equal, toItem: view, attribute: .right, multiplier: 1.0, constant: 0),
+                             NSLayoutConstraint(item: recordingsTableView, attribute: .bottom, relatedBy: .equal, toItem: view, attribute: .bottom, multiplier: 1.0, constant: -bottom)])
         recordingsTableView.backgroundColor = Util.Color.backgroundColor
         recordingsTableView.delegate = self
         recordingsTableView.dataSource = self
-        view.addSubview(recordingsTableView)
         refreshControl.addTarget(self, action: #selector(ref(_:)), for: .valueChanged)
         recordingsTableView.refreshControl = refreshControl
     }
@@ -107,6 +110,23 @@ class BrowseViewController: UIViewController {
         })
     }
     
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
+    }
+    
+    func filterRecordings() {
+        if let filterString = searchBar.text?.lowercased() {
+            filteredRecordings = AppDelegate.recordings.filter {
+                $0.name.lowercased().contains(filterString) || $0.artists.first?.name.lowercased().contains(filterString) ?? false
+            }
+            if filteredRecordings.count == 0 {
+                // TODO : Display a "none found" popup
+            }
+        } else {
+            filteredRecordings = []
+        }
+    }
+    
     func populateRecordings() {
         let request: NSFetchRequest<Recording> = Recording.fetchRequest()
         request.sortDescriptors = [NSSortDescriptor(key: "release_date", ascending: true)]
@@ -114,9 +134,7 @@ class BrowseViewController: UIViewController {
         do {
             AppDelegate.recordings = try AppDelegate.viewContext.fetch(request)
             AppDelegate.recordings.sort {
-                
                 guard var first = $0.release_date, var second = $1.release_date else { return ($0.release_date != nil && $1.release_date == nil )}
-                
                 if Util.isTBA(date: first) {
                     first = Calendar.current.date(byAdding: .year, value: -1999, to: first) ?? first
                 }
@@ -130,10 +148,9 @@ class BrowseViewController: UIViewController {
         }
     }
 
+    /// Needed to reload the table view from AppDelegate
     func reloadTableView() {
-        DispatchQueue.main.async {
-            self.recordingsTableView.reloadData()
-        }
+        self.recordingsTableView.reloadData()
     }
 }
 
@@ -145,11 +162,35 @@ extension BrowseViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return AppDelegate.recordings.count
+        return filteredRecordings.count == 0 ? AppDelegate.recordings.count : filteredRecordings.count
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         return "upcoming recordings"
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 48
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let view = UIView()
+        view.backgroundColor = Util.Color.backgroundColor
+        
+        view.addSubview(searchBar)
+        searchBar.translatesAutoresizingMaskIntoConstraints = false
+        view.addConstraints([NSLayoutConstraint(item: searchBar, attribute: .top, relatedBy: .equal, toItem: view, attribute: .top, multiplier: 1.0, constant: 8),
+                             NSLayoutConstraint(item: searchBar, attribute: .left, relatedBy: .equal, toItem: view, attribute: .left, multiplier: 1.0, constant: 0),
+                             NSLayoutConstraint(item: searchBar, attribute: .right, relatedBy: .equal, toItem: view, attribute: .right, multiplier: 1.0, constant: 0),
+                             NSLayoutConstraint(item: searchBar, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1.0, constant: 32)])
+        searchBar.barStyle = .blackTranslucent
+        searchBar.barTintColor = Util.Color.backgroundColor
+        searchBar.showsCancelButton = true
+        searchBar.tintColor = Util.Color.secondary
+        (searchBar.value(forKey: "searchField") as? UITextField)?.textColor = UIColor.white
+        searchBar.delegate = self
+
+        return view
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -157,7 +198,8 @@ extension BrowseViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = RecordingCell(recording: AppDelegate.recordings[indexPath.row])
+        let recording = filteredRecordings.count == 0 ? AppDelegate.recordings[indexPath.row] : filteredRecordings[indexPath.row]
+        let cell = RecordingCell(recording: recording)
         cell.artistLabelFontSize = 28.0
         cell.recordingLabelFontSize = 20.0
         cell.dateLabelFontSize = 16.0
@@ -189,5 +231,23 @@ extension BrowseViewController: UITableViewDelegate, UITableViewDataSource {
             follow.backgroundColor = Util.Color.secondary
             return [follow]
         }
+    }
+}
+
+extension BrowseViewController: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        dismissKeyboard()
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.text = ""
+        dismissKeyboard()
+        filterRecordings()
+        reloadTableView()
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        filterRecordings()
+        reloadTableView()
     }
 }

@@ -19,8 +19,6 @@ class FollowingViewController: UIViewController {
         var isOpen: Bool!
     }
     
-    var browseViewController: BrowseViewController!
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
