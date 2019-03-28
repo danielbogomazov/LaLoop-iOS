@@ -84,6 +84,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationDidBecomeActive(_ application: UIApplication) {
         browseViewController.reloadTableView()
+        followingViewController.reloadTableView()
     }
 
     func applicationWillTerminate(_ application: UIApplication) {

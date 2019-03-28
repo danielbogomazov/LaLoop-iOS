@@ -219,7 +219,9 @@ extension BrowseViewController: UITableViewDelegate, UITableViewDataSource {
         if followedArtists.contains(artistID) {
             let unfollow = UITableViewRowAction(style: .default, title: "Unfollow") { (_, _) in
                 Util.unfollowArtist(id: artistID)
-                cell.updateButtonImage()
+                DispatchQueue.main.async {
+                    cell.updateButtonImage()
+                }
             }
             unfollow.backgroundColor = UIColor.red
             return [unfollow]

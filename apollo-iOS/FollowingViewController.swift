@@ -11,7 +11,7 @@ import CoreData
 
 class FollowingViewController: UIViewController {
 
-    private var artistsTableView: UITableView!
+    lazy private var artistsTableView = UITableView()
     private var artists: [artistStruct] = []
 
     struct artistStruct {
@@ -28,8 +28,8 @@ class FollowingViewController: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        reloadTableView()
         populateArtists()
+        reloadTableView()
     }
     
     override func didReceiveMemoryWarning() {
@@ -39,23 +39,23 @@ class FollowingViewController: UIViewController {
     
     func setupTableView() {
         
-        // Safe Area
-        let y: CGFloat = navigationController?.navigationBar.frame.maxY ?? 0
-        let height: CGFloat = view.frame.height - y - (tabBarController?.tabBar.frame.height ?? 0)
-        
-        let frame = CGRect(x: 0, y: y, width: view.bounds.width, height: height)
-        
-        artistsTableView = UITableView(frame: frame, style: .grouped)
+        artistsTableView = UITableView(frame: CGRect(), style: .grouped)
+        artistsTableView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(artistsTableView)
+        let top = navigationController?.navigationBar.frame.maxY ?? 0
+        let bottom = tabBarController?.tabBar.frame.height ?? 0
+        view.addConstraints([NSLayoutConstraint(item: artistsTableView, attribute: .top, relatedBy: .equal, toItem: view, attribute: .top, multiplier: 1.0, constant: top),
+                             NSLayoutConstraint(item: artistsTableView, attribute: .left, relatedBy: .equal, toItem: view, attribute: .left, multiplier: 1.0, constant: 0),
+                             NSLayoutConstraint(item: artistsTableView, attribute: .right, relatedBy: .equal, toItem: view, attribute: .right, multiplier: 1.0, constant: 0),
+                             NSLayoutConstraint(item: artistsTableView, attribute: .bottom, relatedBy: .equal, toItem: view, attribute: .bottom, multiplier: 1.0, constant: -bottom)])
         artistsTableView.backgroundColor = Util.Color.backgroundColor
         artistsTableView.delegate = self
         artistsTableView.dataSource = self
-        view.addSubview(artistsTableView)
     }
     
+    /// Needed to reload the table view from AppDelegate
     func reloadTableView() {
-        DispatchQueue.main.async {
-            self.artistsTableView.reloadData()
-        }
+        self.artistsTableView.reloadData()
     }
     
     func populateArtists() {
@@ -79,6 +79,21 @@ class FollowingViewController: UIViewController {
         } catch let error as NSError {
             print("Could not fetch. \(error), \(error.userInfo)")
         }
+    }
+    
+    func unfollowPrompt(for artist: Artist) {
+        let alert = UIAlertController(title: "Unfollow Artist?", message: "This will unfollow all upcoming recording notifications for the artist.", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "Unfollow", style: .destructive, handler: { _ in
+            Util.unfollowArtist(id: artist.id)
+            DispatchQueue.main.async {
+                self.artists = self.artists.filter {
+                    $0.obj != artist
+                }
+                self.reloadTableView()
+            }
+        }))
+        self.present(alert, animated: true, completion: nil)
     }
 }
 
@@ -125,6 +140,7 @@ extension FollowingViewController: UITableViewDelegate, UITableViewDataSource {
             let cell = ArtistCell(artist: artists[indexPath.section].obj)
             cell.artistLabelFontSize = 18.0
             cell.upcomingLabelFontSize = 12.0
+            cell.delegate = self
             return cell
         } else {
             let recordings = Array(artists[indexPath.section].obj.recordings)
@@ -141,5 +157,20 @@ extension FollowingViewController: UITableViewDelegate, UITableViewDataSource {
             artists[indexPath.section].isOpen = !artists[indexPath.section].isOpen
             tableView.reloadSections([indexPath.section], with: .none)
         }
+    }
+    
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        
+        let unfollow = UITableViewRowAction(style: .default, title: "Unfollow") { (_, _) in
+            self.unfollowPrompt(for: self.artists[indexPath.section].obj)
+        }
+        unfollow.backgroundColor = UIColor.red
+        return [unfollow]
+    }
+}
+
+extension FollowingViewController: ArtistCellDelegate {
+    func unfollowButtonPressed(for artist: Artist) {
+        unfollowPrompt(for: artist)
     }
 }

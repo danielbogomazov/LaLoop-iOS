@@ -8,10 +8,18 @@
 
 import UIKit
 
+protocol ArtistCellDelegate: AnyObject {
+    func unfollowButtonPressed(for artist: Artist)
+}
+
 class ArtistCell: UITableViewCell {
     
-    lazy var artistLabel = UILabel()
-    lazy var upcomingLabel = UILabel()
+    private lazy var followingButton = UIButton()
+    private lazy var artistLabel = UILabel()
+    private lazy var upcomingLabel = UILabel()
+    private var artist: Artist!
+    
+    weak var delegate: ArtistCellDelegate?
     
     var artistName: String {
         get { return artistLabel.text! }
@@ -36,16 +44,27 @@ class ArtistCell: UITableViewCell {
     init(artist: Artist) {
         super.init(style: .default, reuseIdentifier: "artistCell")
         
+        self.artist = artist
+        
         backgroundColor = Util.Color.backgroundColor
         selectionStyle = .none
 
+        contentView.addSubview(followingButton)
+        followingButton.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addConstraints([NSLayoutConstraint(item: followingButton, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .width, multiplier: 1.0, constant: 24),
+                                    NSLayoutConstraint(item: followingButton, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1.0, constant: 24),
+                                    NSLayoutConstraint(item: followingButton, attribute: .centerY, relatedBy: .equal, toItem: contentView, attribute: .centerY, multiplier: 1.0, constant: 0),
+                                    NSLayoutConstraint(item: followingButton, attribute: .right, relatedBy: .equal, toItem: contentView, attribute: .right, multiplier: 1.0, constant: -32)])
+        followingButton.addTarget(self, action: #selector(unfollowButtonPressed(_:)), for: .touchUpInside)
+        followingButton.setImage(UIImage(named: "Followed"), for: .normal)
+        
         let wrapperView = UIView()
         contentView.addSubview(wrapperView)
         wrapperView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addConstraints([NSLayoutConstraint(item: wrapperView, attribute: .top, relatedBy: .equal, toItem: contentView, attribute: .top, multiplier: 1.0, constant: 8),
                                     NSLayoutConstraint(item: wrapperView, attribute: .bottom, relatedBy: .equal, toItem: contentView, attribute: .bottom, multiplier: 1.0, constant: -8),
                                     NSLayoutConstraint(item: wrapperView, attribute: .left, relatedBy: .equal, toItem: contentView, attribute: .left, multiplier: 1.0, constant: 8),
-                                    NSLayoutConstraint(item: wrapperView, attribute: .right, relatedBy: .equal, toItem: contentView, attribute: .right, multiplier: 1.0, constant: -8)])
+                                    NSLayoutConstraint(item: wrapperView, attribute: .right, relatedBy: .equal, toItem: followingButton, attribute: .left, multiplier: 1.0, constant: -8)])
 
         wrapperView.addSubview(artistLabel)
         artistLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -72,4 +91,7 @@ class ArtistCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    @objc func unfollowButtonPressed(_ sender: UIButton) {
+        delegate?.unfollowButtonPressed(for: artist)
+    }
 }

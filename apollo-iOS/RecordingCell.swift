@@ -129,14 +129,12 @@ class RecordingCell: UITableViewCell {
     }
     
     func updateButtonImage() {
-        DispatchQueue.main.async {
-            if let artistID = self.recording.artists.first?.id,
-                let artists = UserDefaults.standard.array(forKey: Util.Constant.followedArtistsKey) as? [String],
-                artists.contains(artistID) {
-                self.followingButton.setImage(UIImage(named: "Followed"), for: .normal)
-            } else {
-                self.followingButton.setImage(UIImage(named: "NotFollowed"), for: .normal)
-            }
+        if let artistID = self.recording.artists.first?.id,
+            let artists = UserDefaults.standard.array(forKey: Util.Constant.followedArtistsKey) as? [String],
+            artists.contains(artistID) {
+            self.followingButton.setImage(UIImage(named: "Followed"), for: .normal)
+        } else {
+            self.followingButton.setImage(UIImage(named: "NotFollowed"), for: .normal)
         }
     }
     
