@@ -137,7 +137,7 @@ extension FollowingViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.row == 0 {
-            let cell = ArtistCell(artist: artists[indexPath.section].obj)
+            let cell = ArtistCell(artist: artists[indexPath.section].obj, isExpanded: artists[indexPath.section].isOpen)
             cell.artistLabelFontSize = 18.0
             cell.upcomingLabelFontSize = 12.0
             cell.delegate = self
