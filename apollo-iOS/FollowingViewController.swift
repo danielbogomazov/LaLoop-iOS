@@ -12,6 +12,7 @@ import CoreData
 class FollowingViewController: UIViewController {
 
     lazy private var artistsTableView = UITableView()
+    lazy private var noneFollowingLabel = UILabel()
     private var artists: [artistStruct] = []
 
     struct artistStruct {
@@ -28,6 +29,7 @@ class FollowingViewController: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        setupNoneFollowingLabel()
         populateArtists()
         reloadTableView()
     }
@@ -76,6 +78,7 @@ class FollowingViewController: UIViewController {
             for a in artistsArray {
                 artists.append(artistStruct(obj: a, isOpen: false))
             }
+            noneFollowingLabel.isHidden = artists.count > 0
         } catch let error as NSError {
             print("Could not fetch. \(error), \(error.userInfo)")
         }
@@ -90,10 +93,23 @@ class FollowingViewController: UIViewController {
                 self.artists = self.artists.filter {
                     $0.obj != artist
                 }
+                self.noneFollowingLabel.isHidden = self.artists.count > 0
                 self.reloadTableView()
             }
         }))
         self.present(alert, animated: true, completion: nil)
+    }
+    
+    func setupNoneFollowingLabel() {
+        noneFollowingLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(noneFollowingLabel)
+        view.addConstraints([NSLayoutConstraint(item: noneFollowingLabel, attribute: .left, relatedBy: .equal, toItem: view, attribute: .left, multiplier: 1.0, constant: 0),
+                             NSLayoutConstraint(item: noneFollowingLabel, attribute: .right, relatedBy: .equal, toItem: view, attribute: .right, multiplier: 1.0, constant: 0),
+                             NSLayoutConstraint(item: noneFollowingLabel, attribute: .centerY, relatedBy: .equal, toItem: view, attribute: .centerY, multiplier: 1.0, constant: 0)])
+        noneFollowingLabel.isHidden = true
+        noneFollowingLabel.textAlignment = .center
+        noneFollowingLabel.textColor = Util.Color.main
+        noneFollowingLabel.text = "Not following any artists"
     }
 }
 
