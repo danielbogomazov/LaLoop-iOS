@@ -30,7 +30,7 @@ public class Util {
     
     struct Constant {
         static let url = "https://apolloios.ddns.net"
-        static let followedArtistsKey = "Followed Artists"
+        static let followedRecordingsKey = "Followed Recordings"
     }
     
     static func getCountdownString(until releaseDate: Date) -> String {
@@ -92,28 +92,27 @@ public class Util {
         return newString
     }
     
-    /// Removes an artist from the following list
+    /// Removes a recording from the following list
     ///
-    /// - Parameter id: ID of the artist to unfollow
-    static func unfollowArtist(id: String) {
-        guard var followedArtists = UserDefaults.standard.array(forKey: Util.Constant.followedArtistsKey) as? [String] else { return }
-        guard let index = followedArtists.firstIndex(of: id) else { return }
+    /// - Parameter id: ID of the recording to unfollow
+    static func unfollowRecording(id: String) {
+        guard var followedRecordings = UserDefaults.standard.array(forKey: Util.Constant.followedRecordingsKey) as? [String] else { return }
+        guard let index = followedRecordings.firstIndex(of: id) else { return }
         
-        followedArtists.remove(at: index)
-        UserDefaults.standard.set(followedArtists, forKey: Util.Constant.followedArtistsKey)
+        followedRecordings.remove(at: index)
+        UserDefaults.standard.set(followedRecordings, forKey: Util.Constant.followedRecordingsKey)
         LocalNotif.removeRecording(id: id)
     }
     
-    /// Add an artist to the following list
+    /// Add a recording to the following list
     ///
     /// - Parameters:
-    ///   - id: ID of the artist to follow
     ///   - recording: Recording for which the notification will be made for
-    static func followArtist(id: String, recording: Recording) {
-        guard var followedArtists = UserDefaults.standard.array(forKey: Util.Constant.followedArtistsKey) as? [String] else { return }
+    static func followRecording(recording: Recording) {
+        guard var followedRecordings = UserDefaults.standard.array(forKey: Util.Constant.followedRecordingsKey) as? [String] else { return }
         
-        followedArtists.append(id)
-        UserDefaults.standard.set(followedArtists, forKey: Util.Constant.followedArtistsKey)
+        followedRecordings.append(recording.id)
+        UserDefaults.standard.set(followedRecordings, forKey: Util.Constant.followedRecordingsKey)
         LocalNotif.createNewRecording(recording: recording, completionHandler: { (success, error) in
             if let e = error {
                 print(e.localizedDescription)

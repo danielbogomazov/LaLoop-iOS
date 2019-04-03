@@ -129,9 +129,7 @@ class RecordingCell: UITableViewCell {
     }
     
     func updateButtonImage() {
-        if let artistID = self.recording.artists.first?.id,
-            let artists = UserDefaults.standard.array(forKey: Util.Constant.followedArtistsKey) as? [String],
-            artists.contains(artistID) {
+        if let followedRecordings = UserDefaults.standard.array(forKey: Util.Constant.followedRecordingsKey) as? [String], followedRecordings.contains(recording.id) {
             self.followingButton.setImage(UIImage(named: "Followed"), for: .normal)
         } else {
             self.followingButton.setImage(UIImage(named: "NotFollowed"), for: .normal)
@@ -139,13 +137,11 @@ class RecordingCell: UITableViewCell {
     }
     
     @objc func followingButtonPressed(_ sender: UIButton) {
-        guard let followedArtists = UserDefaults.standard.array(forKey: Util.Constant.followedArtistsKey) as? [String] else { return }
-        guard let id = recordingObj.artists.first?.id else { return }
-        
-        if followedArtists.contains(id) {
-            Util.unfollowArtist(id: id)
+        guard let followedRecordings = UserDefaults.standard.array(forKey: Util.Constant.followedRecordingsKey) as? [String] else { return }
+        if followedRecordings.contains(recording.id) {
+            Util.unfollowRecording(id: recording.id)
         } else {
-            Util.followArtist(id: id, recording: recording)
+            Util.followRecording(recording: recording)
         }
         updateButtonImage()
     }

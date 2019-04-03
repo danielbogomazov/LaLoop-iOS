@@ -11,6 +11,8 @@ import UserNotifications
 
 struct LocalNotif {
     
+    static let center = UNUserNotificationCenter.current()
+    
     static func createNewRecording(recording: Recording, completionHandler: @escaping (Bool, Error?) -> Void) {
         // TODO : When the date changes, make sure the notification changes as well
         guard let date = recording.release_date else {
@@ -48,7 +50,6 @@ struct LocalNotif {
     }
     
     static func removeRecording(id: String) {
-        let center = UNUserNotificationCenter.current()
         center.removePendingNotificationRequests(withIdentifiers: [id])
     }
     

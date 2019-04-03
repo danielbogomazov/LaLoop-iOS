@@ -103,6 +103,7 @@ class BrowseViewController: UIViewController {
         getData(completionHandler: { success in
             DispatchQueue.main.async {
                 if success {
+                    self.populateRecordings()
                     self.reloadTableView()
                 }
                 self.refreshControl.endRefreshing()
@@ -208,17 +209,16 @@ extension BrowseViewController: UITableViewDelegate, UITableViewDataSource {
         
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         
-        if UserDefaults.standard.array(forKey: Util.Constant.followedArtistsKey) == nil {
-            UserDefaults.standard.set([], forKey: Util.Constant.followedArtistsKey)
+        if UserDefaults.standard.array(forKey: Util.Constant.followedRecordingsKey) == nil {
+            UserDefaults.standard.set([], forKey: Util.Constant.followedRecordingsKey)
         }
-        
-        guard let followedArtists = UserDefaults.standard.array(forKey: Util.Constant.followedArtistsKey) as? [String] else { return [] }
-        let cell = tableView.cellForRow(at: indexPath) as! RecordingCell
-        guard let artistID = cell.recording.artists.first?.id else { return [] }
 
-        if followedArtists.contains(artistID) {
+        guard let followedRecordings = UserDefaults.standard.array(forKey: Util.Constant.followedRecordingsKey) as? [String] else { return [] }
+        let cell = tableView.cellForRow(at: indexPath) as! RecordingCell
+        
+        if followedRecordings.contains(cell.recording.id) {
             let unfollow = UITableViewRowAction(style: .default, title: "Unfollow") { (_, _) in
-                Util.unfollowArtist(id: artistID)
+                Util.unfollowRecording(id: cell.recording.id)
                 DispatchQueue.main.async {
                     cell.updateButtonImage()
                 }
@@ -227,7 +227,7 @@ extension BrowseViewController: UITableViewDelegate, UITableViewDataSource {
             return [unfollow]
         } else {
             let follow = UITableViewRowAction(style: .default, title: "Follow") { (_, _) in
-                Util.followArtist(id: artistID, recording: cell.recording)
+                Util.followRecording(recording: cell.recording)
                 cell.updateButtonImage()
             }
             follow.backgroundColor = Util.Color.secondary

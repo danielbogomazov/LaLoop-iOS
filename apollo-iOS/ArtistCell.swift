@@ -8,18 +8,11 @@
 
 import UIKit
 
-protocol ArtistCellDelegate: AnyObject {
-    func unfollowButtonPressed(for artist: Artist)
-}
-
 class ArtistCell: UITableViewCell {
     private lazy var expandImageView = UIImageView()
-    private lazy var followingButton = UIButton()
     private lazy var artistLabel = UILabel()
     private lazy var upcomingLabel = UILabel()
     private var artist: Artist!
-    
-    weak var delegate: ArtistCellDelegate?
     
     var artistName: String {
         get { return artistLabel.text! }
@@ -47,22 +40,13 @@ class ArtistCell: UITableViewCell {
         
         backgroundColor = Util.Color.backgroundColor
         selectionStyle = .none
-
-        contentView.addSubview(followingButton)
-        followingButton.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addConstraints([NSLayoutConstraint(item: followingButton, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .width, multiplier: 1.0, constant: 24),
-                                    NSLayoutConstraint(item: followingButton, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1.0, constant: 24),
-                                    NSLayoutConstraint(item: followingButton, attribute: .centerY, relatedBy: .equal, toItem: contentView, attribute: .centerY, multiplier: 1.0, constant: 0),
-                                    NSLayoutConstraint(item: followingButton, attribute: .right, relatedBy: .equal, toItem: contentView, attribute: .right, multiplier: 1.0, constant: -32)])
-        followingButton.addTarget(self, action: #selector(unfollowButtonPressed(_:)), for: .touchUpInside)
-        followingButton.setImage(UIImage(named: "Followed"), for: .normal)
         
         contentView.addSubview(expandImageView)
         expandImageView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addConstraints([NSLayoutConstraint(item: expandImageView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .width, multiplier: 1.0, constant: 24),
                                     NSLayoutConstraint(item: expandImageView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1.0, constant: 24),
                                     NSLayoutConstraint(item: expandImageView, attribute: .centerY, relatedBy: .equal, toItem: contentView, attribute: .centerY, multiplier: 1.0, constant: 0),
-                                    NSLayoutConstraint(item: expandImageView, attribute: .right, relatedBy: .equal, toItem: followingButton, attribute: .left, multiplier: 1.0, constant: -12)])
+                                    NSLayoutConstraint(item: expandImageView, attribute: .right, relatedBy: .equal, toItem: contentView, attribute: .right, multiplier: 1.0, constant: -32)])
         expandImageView.image = isExpanded ? UIImage(named: "ArrowUp") : UIImage(named: "ArrowDown")
 
         let wrapperView = UIView()
@@ -96,9 +80,5 @@ class ArtistCell: UITableViewCell {
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    @objc func unfollowButtonPressed(_ sender: UIButton) {
-        delegate?.unfollowButtonPressed(for: artist)
     }
 }
