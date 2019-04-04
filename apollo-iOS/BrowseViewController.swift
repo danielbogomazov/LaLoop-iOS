@@ -27,6 +27,7 @@ class BrowseViewController: UIViewController {
             DispatchQueue.main.async {
                 if success {
                     self.populateRecordings()
+                    LocalNotif.update()
                     self.reloadTableView()
                 } else {
                     // TODO - Load from cache?
@@ -104,6 +105,7 @@ class BrowseViewController: UIViewController {
             DispatchQueue.main.async {
                 if success {
                     self.populateRecordings()
+                    LocalNotif.update()
                     self.reloadTableView()
                 }
                 self.refreshControl.endRefreshing()

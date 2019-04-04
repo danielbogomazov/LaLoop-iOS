@@ -22,24 +22,12 @@ struct LocalNotif {
         
         let content = UNMutableNotificationContent()
         content.title = NSString.localizedUserNotificationString(forKey: "Recording Released!", arguments: nil)
-        
-        var artists = ""
-        for (index, artist) in recording.artists.enumerated() {
-            let name: String = index == 0 ? artist.name : " & " + artist.name
-            artists.append(contentsOf: name)
-        }
-        if recording.name == "TBA" {
-            content.body = NSString.localizedUserNotificationString(forKey: "By \(artists)", arguments: nil)
-        } else {
-            content.body = NSString.localizedUserNotificationString(forKey: recording.name + " by \(artists)", arguments: nil)
-        }
+        content.body = createBody(for: recording)
         
         let dateComponents = Calendar.current.dateComponents([.day, .month, .year], from: date)
         let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: false)
         let request = UNNotificationRequest(identifier: recording.id, content: content, trigger: trigger)
         
-        
-        let center = UNUserNotificationCenter.current()
         center.add(request) { (error: Error?) in
             if let e = error {
                 completionHandler(false, e)
@@ -53,5 +41,41 @@ struct LocalNotif {
         center.removePendingNotificationRequests(withIdentifiers: [id])
     }
     
+    static func update() {
+        center.getPendingNotificationRequests(completionHandler: { notif in
+            for n in notif {
+                if let recording = AppDelegate.recordings.first(where: { $0.id == n.identifier }) {
+                    if let date = recording.release_date {
+                        if (n.trigger as! UNCalendarNotificationTrigger).dateComponents != Calendar.current.dateComponents([.day, .month, .year], from: date) || n.content.body != createBody(for: recording) {
+                            
+                            removeRecording(id: recording.id)
+                            createNewRecording(recording: recording, completionHandler: { (success, error) in
+                                if let e = error {
+                                    print(e.localizedDescription)
+                                }
+                                if !success {
+                                    // TODO
+                                }
+                            })
+                        }
+                    } else {
+                        // TODO
+                    }
+                } else {
+                    // TODO
+                }
+            }
+        })
+    }
+    
+    static func createBody(for recording: Recording) -> String {
+        var artists = ""
+        for (index, artist) in recording.artists.enumerated() {
+            let name: String = index == 0 ? artist.name : " & " + artist.name
+            artists.append(contentsOf: name)
+        }
+        return recording.name == "TBA" ? NSString.localizedUserNotificationString(forKey: "By \(artists)", arguments: nil) : NSString.localizedUserNotificationString(forKey: recording.name + " by \(artists)", arguments: nil)
+    }
+
     private init() {}
 }
