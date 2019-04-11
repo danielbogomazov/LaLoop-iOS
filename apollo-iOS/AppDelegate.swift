@@ -36,13 +36,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         browseNavController.title = "Browse"
         browseNavController.navigationBar.barStyle = .blackOpaque
-        browseNavController.navigationBar.tintColor = UIColor.white
+        createTabBarItem(tabBarItem: browseNavController.tabBarItem, image: #imageLiteral(resourceName: "Browse"), selectedImage: #imageLiteral(resourceName: "BrowseSelected"))
         browseNavController.viewControllers = [browseViewController]
         browseNavController.restorationIdentifier = "browseNavController"
         
         followingNavController.title = "Following"
         followingNavController.navigationBar.barStyle = .blackOpaque
-        followingNavController.navigationBar.tintColor = UIColor.white
+        createTabBarItem(tabBarItem: followingNavController.tabBarItem, image: #imageLiteral(resourceName: "Following"), selectedImage: #imageLiteral(resourceName: "FollowingSelected"))
         followingNavController.viewControllers = [followingViewController]
         followingViewController.restorationIdentifier = "followingNavController"
         
@@ -136,6 +136,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
             }
         }
+    }
+    
+    // MARK: - Other helper functions
+    
+    func createTabBarItem(tabBarItem: UITabBarItem, image: UIImage, selectedImage: UIImage) {
+        tabBarItem.image = image.withRenderingMode(.alwaysOriginal)
+        tabBarItem.selectedImage = selectedImage.withRenderingMode(.alwaysOriginal)
+        tabBarItem.setTitleTextAttributes([.foregroundColor: Util.Color.main], for: .selected)
+        tabBarItem.setTitleTextAttributes([.foregroundColor: UIColor.white], for: .normal)
+        tabBarItem.titlePositionAdjustment = UIOffset(horizontal: 0, vertical: 8)
+        tabBarItem.imageInsets = UIEdgeInsets(top: 8, left: 0, bottom: -8, right: 0)
     }
 
 }

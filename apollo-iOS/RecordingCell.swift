@@ -130,9 +130,9 @@ class RecordingCell: UITableViewCell {
     
     func updateButtonImage() {
         if let followedRecordings = UserDefaults.standard.array(forKey: Util.Constant.followedRecordingsKey) as? [String], followedRecordings.contains(recording.id) {
-            self.followingButton.setImage(UIImage(named: "Followed"), for: .normal)
+            self.followingButton.setImage(#imageLiteral(resourceName: "Followed"), for: .normal)
         } else {
-            self.followingButton.setImage(UIImage(named: "NotFollowed"), for: .normal)
+            self.followingButton.setImage(#imageLiteral(resourceName: "NotFollowed"), for: .normal)
         }
     }
     

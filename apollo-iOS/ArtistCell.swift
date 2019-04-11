@@ -47,7 +47,7 @@ class ArtistCell: UITableViewCell {
                                     NSLayoutConstraint(item: expandImageView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1.0, constant: 24),
                                     NSLayoutConstraint(item: expandImageView, attribute: .centerY, relatedBy: .equal, toItem: contentView, attribute: .centerY, multiplier: 1.0, constant: 0),
                                     NSLayoutConstraint(item: expandImageView, attribute: .right, relatedBy: .equal, toItem: contentView, attribute: .right, multiplier: 1.0, constant: -32)])
-        expandImageView.image = isExpanded ? UIImage(named: "ArrowUp") : UIImage(named: "ArrowDown")
+        expandImageView.image = isExpanded ? #imageLiteral(resourceName: "ArrowUp") : #imageLiteral(resourceName: "ArrowDown")
 
         let wrapperView = UIView()
         contentView.addSubview(wrapperView)
