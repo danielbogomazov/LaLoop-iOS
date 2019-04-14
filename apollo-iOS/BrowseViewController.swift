@@ -67,16 +67,32 @@ class BrowseViewController: UIViewController {
                 return
             }
             do {
+                // Store found recording IDs to be used during removing not found recordings
+                var existingRecordings: [String] = []
                 let jsonData = try JSONDecoder().decode(RecordingData.self, from: data)
                 for var recording in jsonData.recordings {
                     DispatchQueue.main.async {
+                        existingRecordings.append(recording.recording_id)
                         recording.save()
                     }
                 }
+                DispatchQueue.main.async {
+                    let request: NSFetchRequest<Recording> = Recording.fetchRequest()
+                    do {
+                        let storedRecordings = try AppDelegate.viewContext.fetch(request)
+                        for recording in storedRecordings {
+                            if existingRecordings.firstIndex(of: recording.id) == nil {
+                                AppDelegate.viewContext.delete(recording)
+                                try AppDelegate.viewContext.save()
+                            }
+                        }
+                    } catch let error as NSError {
+                        print("ERROR - \(error)\n--\(error.userInfo)")
+                    }
+                }
                 completionHandler(true)
-            } catch {
-                print("ERROR in getData() - Couldn't decode JSON from server")
-                print("-- \(error)\n")
+            } catch let error as NSError {
+                print("ERROR - \(error)\n--\(error.userInfo)")
                 completionHandler(false)
             }
         }

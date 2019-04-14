@@ -81,8 +81,8 @@ struct RecordingObj: Decodable {
                 let newEntities = createNewFor(entity: entity) as! [Artist]
                 newEntities[0].recordings.insert(recording)
                 recording.artists.insert(newEntities[0])
-            } else if artists.count == 1 && recording.artists.contains(where: { (artist) -> Bool in return artist.id == artist_id }) {
-                artists[0].name = artist_name
+            } else if artists.count == 1 {
+                artists[0].name = artist_name // update artist name
                 recording.artists.insert(artists[0])
                 artists[0].recordings.insert(recording)
             }
@@ -96,10 +96,9 @@ struct RecordingObj: Decodable {
                 }
             } else {
                 for genre in self.genres {
-                    if recording.genres.contains(where: { (g) -> Bool in return g.id == genre.genre_id }) {
-                        recording.genres.insert(genres[0])
-                        genres[0].recordings.insert(recording)
-                    }
+                    genres[0].name = genre.genre_name
+                    recording.genres.insert(genres[0])
+                    genres[0].recordings.insert(recording)
                 }
             }
         case .label:
@@ -108,7 +107,7 @@ struct RecordingObj: Decodable {
                 let newEntities = createNewFor(entity: entity) as! [Label]
                 newEntities[0].recordings.insert(recording)
                 recording.labels.insert(newEntities[0])
-            } else if labels.count == 1 && recording.labels.contains(where: { (label) -> Bool in return label.id == label_id }) {
+            } else if labels.count == 1 {
                 labels[0].name = label_name
                 recording.labels.insert(labels[0])
                 labels[0].recordings.insert(recording)
