@@ -13,11 +13,12 @@ class FollowingViewController: UIViewController {
 
     lazy private var artistsTableView = UITableView()
     lazy private var noneFollowingLabel = UILabel()
-    private var artists: [artistStruct] = []
+    private var artists: [ArtistStruct] = []
 
-    struct artistStruct {
-        var obj: Artist!
-        var isOpen: Bool!
+    struct ArtistStruct {
+        var obj: Artist
+        var isOpen: Bool
+        var followedRecordings: [Recording]
     }
     
     override func viewDidLoad() {
@@ -61,32 +62,31 @@ class FollowingViewController: UIViewController {
     }
     
     func populateArtists() {
-
-        var followedArtists: [String] = []
+        artists.removeAll()
         guard let followedRecordings = UserDefaults.standard.array(forKey: Util.Constant.followedRecordingsKey) as? [String] else { return }
         for id in followedRecordings {
-            guard let artistID = (AppDelegate.recordings.first { $0.id == id })?.artists.first?.id else { return }
-            followedArtists.append(artistID)
-        }
-        
-        artists.removeAll()
-
-        let request: NSFetchRequest<Artist> = Artist.fetchRequest()
-        request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
-        
-        let predicates = followedArtists.map {
-            NSPredicate(format: "id == %@", $0)
-        }
-        request.predicate = NSCompoundPredicate(orPredicateWithSubpredicates: predicates)
-        do {
-            let artistsArray = try AppDelegate.viewContext.fetch(request)
-            for a in artistsArray {
-                artists.append(artistStruct(obj: a, isOpen: false))
+            guard let artistID = (AppDelegate.recordings.first { $0.id == id})?.artists.first?.id else { return}
+            
+            let artistRequest: NSFetchRequest<Artist> = Artist.fetchRequest()
+            artistRequest.predicate = NSPredicate(format: "id == %@", artistID)
+            
+            let recordingRequest: NSFetchRequest<Recording> = Recording.fetchRequest()
+            recordingRequest.predicate = NSPredicate(format: "id == %@", id)
+            
+            do {
+                let artist = try AppDelegate.viewContext.fetch(artistRequest)[0]
+                let recording = try AppDelegate.viewContext.fetch(recordingRequest)[0]
+                
+                if let index = artists.firstIndex(where: { $0.obj == artist }) {
+                    artists[index].followedRecordings.append(recording)
+                } else {
+                    artists.append(ArtistStruct(obj: artist, isOpen: false, followedRecordings: [recording]))
+                }
+            } catch let error as NSError {
+                print("Could not fetch. \(error), \(error.userInfo)")
             }
-            noneFollowingLabel.isHidden = artists.count > 0
-        } catch let error as NSError {
-            print("Could not fetch. \(error), \(error.userInfo)")
         }
+        noneFollowingLabel.isHidden = artists.count > 0
     }
     
     func unfollowPromptForArtist(_ artist: Artist) {
@@ -144,10 +144,7 @@ extension FollowingViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if artists[section].isOpen {
-            return artists[section].obj.recordings.count + 1
-        }
-        return 1
+        return artists[section].isOpen ? artists[section].followedRecordings.count + 1 : 1
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -177,7 +174,7 @@ extension FollowingViewController: UITableViewDelegate, UITableViewDataSource {
             cell.upcomingLabelFontSize = 12.0
             return cell
         } else {
-            let recordings = Array(artists[indexPath.section].obj.recordings)
+            let recordings = Array(artists[indexPath.section].followedRecordings)
             let cell = RecordingCell(recording: recordings[indexPath.row - 1], excludeFollowingButton: true, excludeArtist: true)
             cell.recordingLabelFontSize = 20.0
             cell.dateLabelFontSize = 16.0

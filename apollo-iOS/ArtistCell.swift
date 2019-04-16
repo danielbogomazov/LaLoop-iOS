@@ -74,7 +74,14 @@ class ArtistCell: UITableViewCell {
                                     NSLayoutConstraint(item: upcomingLabel, attribute: .right, relatedBy: .equal, toItem: wrapperView, attribute: .right, multiplier: 1.0, constant: 0),
                                     NSLayoutConstraint(item: upcomingLabel, attribute: .height, relatedBy: .equal, toItem: wrapperView, attribute: .height, multiplier: 0.35, constant: 0)])
         upcomingLabel.setupLabel(fontWeight: .regular, fontSize: upcomingLabel.font.pointSize)
-        let numRecordings = artist.recordings.count
+        
+        guard let followedRecordings = UserDefaults.standard.array(forKey: Util.Constant.followedRecordingsKey) as? [String] else { return }
+        var numRecordings = 0
+        for recording in artist.recordings {
+            if followedRecordings.contains(recording.id) {
+                numRecordings += 1
+            }
+        }
         upcomingLabel.text = "\(numRecordings) upcoming recording" + (numRecordings > 1 ? "s" : "")
     }
     
