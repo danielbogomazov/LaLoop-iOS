@@ -34,12 +34,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
+        browseViewController.title = "apollo"
         browseNavController.title = "Browse"
         browseNavController.navigationBar.barStyle = .blackOpaque
         createTabBarItem(tabBarItem: browseNavController.tabBarItem, image: #imageLiteral(resourceName: "Browse"), selectedImage: #imageLiteral(resourceName: "BrowseSelected"))
         browseNavController.viewControllers = [browseViewController]
         browseNavController.restorationIdentifier = "browseNavController"
         
+        followingViewController.title = "apollo"
         followingNavController.title = "Following"
         followingNavController.navigationBar.barStyle = .blackOpaque
         createTabBarItem(tabBarItem: followingNavController.tabBarItem, image: #imageLiteral(resourceName: "Following"), selectedImage: #imageLiteral(resourceName: "FollowingSelected"))

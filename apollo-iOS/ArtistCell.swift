@@ -82,7 +82,7 @@ class ArtistCell: UITableViewCell {
                 numRecordings += 1
             }
         }
-        upcomingLabel.text = "\(numRecordings) upcoming recording" + (numRecordings > 1 ? "s" : "")
+        upcomingLabel.text = "\(numRecordings) followed upcoming recording" + (numRecordings > 1 ? "s" : "")
     }
     
     required init?(coder aDecoder: NSCoder) {
