@@ -14,14 +14,16 @@ class BrowseViewController: UIViewController {
     private lazy var recordingsTableView = UITableView()
     private lazy var searchBar = UISearchBar()
     private lazy var refreshControl = UIRefreshControl()
+    private lazy var loadingView = UIView()
     private var filteredRecordings: [Recording] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         view.backgroundColor = Util.Color.backgroundColor
         
         setupTableView()
+        setupLoadingView()
 
         getData(completionHandler: { success in
             DispatchQueue.main.async {
@@ -29,6 +31,7 @@ class BrowseViewController: UIViewController {
                     self.populateRecordings()
                     LocalNotif.update()
                     self.reloadTableView()
+                    self.hideLoadingView()
                 } else {
                     // TODO - Load from cache?
                 }
@@ -48,6 +51,60 @@ class BrowseViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
 
+    func hideLoadingView() {
+        UIView.animate(withDuration: 0.2, animations: {
+            self.loadingView.alpha = 0
+        }) { _ in
+            UIView.animate(withDuration: 0.4) {
+                self.tabBarController?.tabBar.isHidden = false
+                self.navigationController?.navigationBar.isHidden = false
+                self.tabBarController?.tabBar.alpha = 1
+                self.navigationController?.navigationBar.alpha = 1
+            }
+        }
+    }
+    
+    func setupLoadingView() {
+        tabBarController?.tabBar.isHidden = true
+        navigationController?.navigationBar.isHidden = true
+        tabBarController?.tabBar.alpha = 0
+        navigationController?.navigationBar.alpha = 0
+        
+        loadingView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(loadingView)
+        
+        
+        view.addConstraints([NSLayoutConstraint(item: loadingView, attribute: .top, relatedBy: .equal, toItem: view, attribute: .topMargin, multiplier: 1.0, constant: 0),
+                             NSLayoutConstraint(item: loadingView, attribute: .left, relatedBy: .equal, toItem: view, attribute: .left, multiplier: 1.0, constant: 0),
+                             NSLayoutConstraint(item: loadingView, attribute: .right, relatedBy: .equal, toItem: view, attribute: .right, multiplier: 1.0, constant: 0),
+                             NSLayoutConstraint(item: loadingView, attribute: .bottom, relatedBy: .equal, toItem: view, attribute: .bottom, multiplier: 1.0, constant: 0)])
+        loadingView.backgroundColor = Util.Color.backgroundColor
+        
+        let apolloLabel = UILabel()
+        apolloLabel.translatesAutoresizingMaskIntoConstraints = false
+        loadingView.addSubview(apolloLabel)
+        loadingView.addConstraints([NSLayoutConstraint(item: apolloLabel, attribute: .top, relatedBy: .equal, toItem: loadingView, attribute: .top, multiplier: 1.0, constant: 180),
+                                NSLayoutConstraint(item: apolloLabel, attribute: .left, relatedBy: .equal, toItem: loadingView, attribute: .left, multiplier: 1.0, constant: 8),
+                                NSLayoutConstraint(item: apolloLabel, attribute: .right, relatedBy: .equal, toItem: loadingView, attribute: .right, multiplier: 1.0, constant: -8),
+                                NSLayoutConstraint(item: apolloLabel, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1.0, constant: 58)])
+        apolloLabel.text = "apollo"
+        apolloLabel.font = UIFont(name: "Arial-BoldMT", size: 46)
+        apolloLabel.textAlignment = .center
+        apolloLabel.textColor = Util.Color.main
+        
+        let upcomingLabel = UILabel()
+        upcomingLabel.translatesAutoresizingMaskIntoConstraints = false
+        loadingView.addSubview(upcomingLabel)
+        loadingView.addConstraints([NSLayoutConstraint(item: upcomingLabel, attribute: .top, relatedBy: .equal, toItem: apolloLabel, attribute: .bottom, multiplier: 1.0, constant: 8),
+                                NSLayoutConstraint(item: upcomingLabel, attribute: .left, relatedBy: .equal, toItem: loadingView, attribute: .left, multiplier: 1.0, constant: 8),
+                                NSLayoutConstraint(item: upcomingLabel, attribute: .right, relatedBy: .equal, toItem: loadingView, attribute: .right, multiplier: 1.0, constant: -8),
+                                NSLayoutConstraint(item: upcomingLabel, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1.0, constant: 21)])
+        upcomingLabel.text = "Upcoming Music Releases"
+        upcomingLabel.font = UIFont.systemFont(ofSize: 17)
+        upcomingLabel.textAlignment = .center
+        upcomingLabel.textColor = UIColor.white
+    }
+    
     func getData(completionHandler: @escaping (Bool) -> ()) {
         
         guard let url = URL(string: Util.Constant.url) else { completionHandler(false); return }

@@ -18,51 +18,40 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1tm-wW-KnM">
-                                <rect key="frame" x="87" y="290" width="201.5" height="87"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wH6-MZ-066">
-                                        <rect key="frame" x="0.0" y="0.0" width="201.5" height="58"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="58" id="aZY-Sk-3fv"/>
-                                        </constraints>
-                                        <attributedString key="attributedText">
-                                            <fragment content="apollo">
-                                                <attributes>
-                                                    <color key="NSColor" red="1" green="0.8666666666666667" blue="0.36078431372549019" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                    <font key="NSFont" size="46" name="Arial-Black"/>
-                                                    <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="truncatingTail" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
-                                                </attributes>
-                                            </fragment>
-                                        </attributedString>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Upcoming Music Releases" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VF1-xk-8Nn">
-                                        <rect key="frame" x="0.0" y="66" width="201.5" height="21"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="21" id="d8L-wr-Klv"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                </subviews>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wH6-MZ-066">
+                                <rect key="frame" x="8" y="200" width="359" height="58"/>
                                 <constraints>
-                                    <constraint firstAttribute="bottom" secondItem="VF1-xk-8Nn" secondAttribute="bottom" id="8KN-qy-lNr"/>
-                                    <constraint firstItem="wH6-MZ-066" firstAttribute="top" secondItem="1tm-wW-KnM" secondAttribute="top" id="SfG-0a-qbh"/>
-                                    <constraint firstItem="VF1-xk-8Nn" firstAttribute="top" secondItem="wH6-MZ-066" secondAttribute="bottom" constant="8" id="YBf-qb-Tty"/>
-                                    <constraint firstAttribute="trailing" secondItem="VF1-xk-8Nn" secondAttribute="trailing" id="g0e-eh-DYO"/>
-                                    <constraint firstItem="wH6-MZ-066" firstAttribute="leading" secondItem="1tm-wW-KnM" secondAttribute="leading" id="sCB-tx-wVd"/>
-                                    <constraint firstAttribute="trailing" secondItem="wH6-MZ-066" secondAttribute="trailing" id="tTU-60-gG0"/>
-                                    <constraint firstItem="VF1-xk-8Nn" firstAttribute="leading" secondItem="1tm-wW-KnM" secondAttribute="leading" id="tXC-yy-5sz"/>
+                                    <constraint firstAttribute="height" constant="58" id="PaL-Vn-AGn"/>
                                 </constraints>
-                            </view>
+                                <attributedString key="attributedText">
+                                    <fragment content="apollo">
+                                        <attributes>
+                                            <color key="NSColor" red="1" green="0.8666666666666667" blue="0.36078431372549019" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <font key="NSFont" size="46" name="Arial-BoldMT"/>
+                                            <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="truncatingTail" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Upcoming Music Releases" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VF1-xk-8Nn">
+                                <rect key="frame" x="8" y="266" width="359" height="21"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="21" id="diJ-Ej-cE4"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" red="0.11764705882352941" green="0.11764705882352941" blue="0.11764705882352941" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="1tm-wW-KnM" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="dD9-Ka-i8h"/>
-                            <constraint firstItem="1tm-wW-KnM" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="l3f-ac-ppd"/>
+                            <constraint firstItem="VF1-xk-8Nn" firstAttribute="top" secondItem="wH6-MZ-066" secondAttribute="bottom" constant="8" id="8Kp-dg-iyi"/>
+                            <constraint firstItem="wH6-MZ-066" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="180" id="Lxt-OR-prT"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="VF1-xk-8Nn" secondAttribute="trailing" constant="8" id="SWs-kc-ppa"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="wH6-MZ-066" secondAttribute="trailing" constant="8" id="dwa-Pl-i0J"/>
+                            <constraint firstItem="VF1-xk-8Nn" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="8" id="lsZ-jj-2rX"/>
+                            <constraint firstItem="wH6-MZ-066" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="8" id="v4U-bA-MXd"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
