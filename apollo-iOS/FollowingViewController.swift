@@ -178,7 +178,6 @@ extension FollowingViewController: UITableViewDelegate, UITableViewDataSource {
             let cell = RecordingCell(recording: recordings[indexPath.row - 1], excludeFollowingButton: true, excludeArtist: true)
             cell.recordingLabelFontSize = 20.0
             cell.dateLabelFontSize = 16.0
-            cell.bgColor = UIColor.white.withAlphaComponent(0.05)
             return cell
         }
     }
