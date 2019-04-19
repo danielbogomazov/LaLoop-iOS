@@ -65,7 +65,13 @@ class FollowingViewController: UIViewController {
         artists.removeAll()
         guard let followedRecordings = UserDefaults.standard.array(forKey: Util.Constant.followedRecordingsKey) as? [String] else { return }
         for id in followedRecordings {
-            guard let artistID = (AppDelegate.recordings.first { $0.id == id})?.artists.first?.id else { return}
+            guard let artistID = (AppDelegate.recordings.first { $0.id == id })?.artists.first?.id else {
+                // Couldn't find the recording or artist
+                // This probably means that something went wrong and those entities don't exist anymore
+                // Unfollow the recording and continue
+                Util.unfollowRecording(id: id)
+                continue
+            }
             
             let artistRequest: NSFetchRequest<Artist> = Artist.fetchRequest()
             artistRequest.predicate = NSPredicate(format: "id == %@", artistID)

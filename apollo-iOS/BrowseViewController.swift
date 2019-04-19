@@ -139,6 +139,7 @@ class BrowseViewController: UIViewController {
                         let storedRecordings = try AppDelegate.viewContext.fetch(request)
                         for recording in storedRecordings {
                             if existingRecordings.firstIndex(of: recording.id) == nil {
+                                Util.unfollowRecording(id: recording.id)
                                 AppDelegate.viewContext.delete(recording)
                                 try AppDelegate.viewContext.save()
                             }
@@ -204,9 +205,24 @@ class BrowseViewController: UIViewController {
     }
     
     func populateRecordings() {
+        
+        // Remove timezone and set to midnight
+        let formatter = DateFormatter()
+        var dateComponents = DateComponents()
+        formatter.dateFormat = "yyyy"
+        dateComponents.year = Int(formatter.string(from: Date()))
+        formatter.dateFormat = "MM"
+        dateComponents.month = Int(formatter.string(from: Date()))
+        formatter.dateFormat = "dd"
+        dateComponents.day = Int(formatter.string(from: Date()))
+        dateComponents.timeZone = TimeZone(abbreviation: "GMT")
+        dateComponents.hour = 0
+        dateComponents.minute = 0
+        let currDate = Calendar.current.date(from: dateComponents) ?? Date()
+
         let request: NSFetchRequest<Recording> = Recording.fetchRequest()
         request.sortDescriptors = [NSSortDescriptor(key: "release_date", ascending: true)]
-        request.predicate = NSPredicate(format: "release_date >= %@ OR release_date == nil", Date() as NSDate)
+        request.predicate = NSPredicate(format: "release_date >= %@ OR release_date == nil", currDate as NSDate)
         do {
             AppDelegate.recordings = try AppDelegate.viewContext.fetch(request)
             AppDelegate.recordings.sort {

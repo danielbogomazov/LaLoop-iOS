@@ -117,7 +117,8 @@ class RecordingCell: UITableViewCell {
                 dateLabel.text = formatter.string(from: newDate ?? date)
             } else {
                 formatter.dateFormat = "MMMM dd YYYY"
-                dateLabel.text = formatter.string(from: date)
+                let releaseDate = formatter.string(from: date)
+                dateLabel.text = releaseDate == formatter.string(from: Date()) ? "Releasing Today" : releaseDate
             }
         } else {
             dateLabel.text = "TBA"
