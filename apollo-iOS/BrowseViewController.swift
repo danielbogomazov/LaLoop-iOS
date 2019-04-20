@@ -27,14 +27,8 @@ class BrowseViewController: UIViewController {
 
         getData(completionHandler: { success in
             DispatchQueue.main.async {
-                if success {
-                    self.populateRecordings()
-                    LocalNotif.update()
-                    self.reloadTableView()
-                    self.hideLoadingView()
-                } else {
-                    // TODO - Load from cache?
-                }
+                self.setup(connected: success)
+                self.hideLoadingView()
             }
         })
         
@@ -62,6 +56,13 @@ class BrowseViewController: UIViewController {
                 self.navigationController?.navigationBar.alpha = 1
             }
         }
+    }
+    
+    func setup(connected: Bool) {
+        self.navigationItem.rightBarButtonItem = connected ? UIBarButtonItem(image: #imageLiteral(resourceName: "ServerOK").withRenderingMode(.alwaysOriginal), style: .done, target: nil, action: nil) : UIBarButtonItem(image: #imageLiteral(resourceName: "ServerError").withRenderingMode(.alwaysOriginal), style: .done, target: nil, action: nil)
+        self.populateRecordings()
+        LocalNotif.update()
+        self.reloadTableView()
     }
     
     func setupLoadingView() {
@@ -110,6 +111,7 @@ class BrowseViewController: UIViewController {
         guard let url = URL(string: Util.Constant.url) else { completionHandler(false); return }
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
+        request.timeoutInterval = 10
         let session = URLSession(configuration: .ephemeral)
         
         let task = session.dataTask(with: request) { data, response, error in
@@ -177,11 +179,7 @@ class BrowseViewController: UIViewController {
     @objc func ref(_ sender: UIRefreshControl) {
         getData(completionHandler: { success in
             DispatchQueue.main.async {
-                if success {
-                    self.populateRecordings()
-                    LocalNotif.update()
-                    self.reloadTableView()
-                }
+                self.setup(connected: success)
                 self.refreshControl.endRefreshing()
             }
         })
