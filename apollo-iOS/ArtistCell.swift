@@ -75,6 +75,14 @@ class ArtistCell: UITableViewCell {
                                     NSLayoutConstraint(item: upcomingLabel, attribute: .height, relatedBy: .equal, toItem: wrapperView, attribute: .height, multiplier: 0.35, constant: 0)])
         upcomingLabel.setupLabel(fontWeight: .regular, fontSize: upcomingLabel.font.pointSize)
         
+        updateUpcomingLabel()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+ 
+    func updateUpcomingLabel() {
         guard let followedRecordings = UserDefaults.standard.array(forKey: Util.Constant.followedRecordingsKey) as? [String] else { return }
         var numRecordings = 0
         for recording in artist.recordings {
@@ -85,7 +93,4 @@ class ArtistCell: UITableViewCell {
         upcomingLabel.text = "\(numRecordings) followed upcoming recording" + (numRecordings > 1 ? "s" : "")
     }
     
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
 }

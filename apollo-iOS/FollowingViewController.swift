@@ -95,31 +95,38 @@ class FollowingViewController: UIViewController {
         noneFollowingLabel.isHidden = artists.count > 0
     }
     
-    func unfollowPromptForArtist(_ artist: Artist) {
+    func unfollowPromptForArtist(_ artist: ArtistStruct, indexPath: IndexPath) {
         let alert = UIAlertController(title: "Unfollow Artist", message: "Unfollow all upcoming recording notifications for the artist?", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         alert.addAction(UIAlertAction(title: "Unfollow", style: .destructive, handler: { _ in
-            for recording in artist.recordings {
-                Util.unfollowRecording(id: recording.id)
-                DispatchQueue.main.async {
-                    self.artists = self.artists.filter { $0.obj != artist }
-                    self.noneFollowingLabel.isHidden = self.artists.count > 0
-                    self.reloadTableView()
+            DispatchQueue.main.async {
+                for recording in artist.followedRecordings {
+                    Util.unfollowRecording(id: recording.id)
                 }
+                self.artists = self.artists.filter { $0.obj != artist.obj }
+                self.noneFollowingLabel.isHidden = self.artists.count > 0
+                self.artistsTableView.deleteSections(IndexSet(integer: indexPath.section), with: .fade)
             }
         }))
         self.present(alert, animated: true, completion: nil)
     }
     
-    func unfollowPromptForRecording(_ recording: Recording) {
+    func unfollowPromptForRecording(_ recording: Recording, indexPath: IndexPath) {
         let alert = UIAlertController(title: "Unfollow Recording", message: "Unfollow this recording?", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         alert.addAction(UIAlertAction(title: "Unfollow", style: .destructive, handler: { _ in
-            Util.unfollowRecording(id: recording.id)
             DispatchQueue.main.async {
-                self.populateArtists()
+                Util.unfollowRecording(id: (self.artistsTableView.cellForRow(at: indexPath) as! RecordingCell).recording.id)
+                self.artists[indexPath.section].followedRecordings.remove(at: indexPath.row - 1)
+                let obj = self.artists[indexPath.section]
+                if obj.followedRecordings.count == 0 {
+                    self.artists = self.artists.filter { $0.obj != obj.obj }
+                    self.artistsTableView.deleteSections(IndexSet(integer: indexPath.section), with: .fade)
+                } else {
+                    self.artistsTableView.deleteRows(at: [indexPath], with: .fade)
+                    (self.artistsTableView.cellForRow(at: IndexPath(row: 0, section: indexPath.section)) as! ArtistCell).updateUpcomingLabel()
+                }
                 self.noneFollowingLabel.isHidden = self.artists.count > 0
-                self.reloadTableView()
             }
         }))
         self.present(alert, animated: true, completion: nil)
@@ -197,9 +204,9 @@ extension FollowingViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
 
-        let unfollow = UITableViewRowAction(style: .default, title: "Unfollow") { (_, _) in
-            indexPath.row == 0 ? self.unfollowPromptForArtist(self.artists[indexPath.section].obj) :
-                self.unfollowPromptForRecording((tableView.cellForRow(at: indexPath) as! RecordingCell).recording)
+        let unfollow = UITableViewRowAction(style: .destructive, title: "Unfollow") { (_, _) in
+            indexPath.row == 0 ? self.unfollowPromptForArtist(self.artists[indexPath.section], indexPath: indexPath) :
+                self.unfollowPromptForRecording((tableView.cellForRow(at: indexPath) as! RecordingCell).recording, indexPath: indexPath)
         }
         unfollow.backgroundColor = UIColor.red
         return [unfollow]
