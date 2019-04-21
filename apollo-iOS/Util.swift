@@ -113,7 +113,7 @@ public class Util {
         
         followedRecordings.append(recording.id)
         UserDefaults.standard.set(followedRecordings, forKey: Util.Constant.followedRecordingsKey)
-        LocalNotif.createNewRecording(recording: recording, completionHandler: { (success, error) in
+        LocalNotif.createNewRecordingNotif(recording: recording, completionHandler: { (success, error) in
             if let e = error {
                 print(e.localizedDescription)
             }
