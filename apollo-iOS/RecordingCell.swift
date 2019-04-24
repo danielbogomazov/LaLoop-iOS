@@ -130,20 +130,13 @@ class RecordingCell: UITableViewCell {
     }
     
     func updateButtonImage() {
-        if let followedRecordings = UserDefaults.standard.array(forKey: Util.Constant.followedRecordingsKey) as? [String], followedRecordings.contains(recording.id) {
-            self.followingButton.setImage(#imageLiteral(resourceName: "Followed"), for: .normal)
-        } else {
-            self.followingButton.setImage(#imageLiteral(resourceName: "NotFollowed"), for: .normal)
-        }
+        let followedRecordings = Util.getFollowedRecordings()
+        followedRecordings.contains(recording.id) ? self.followingButton.setImage(#imageLiteral(resourceName: "Followed"), for: .normal) : self.followingButton.setImage(#imageLiteral(resourceName: "NotFollowed"), for: .normal)
     }
     
     @objc func followingButtonPressed(_ sender: UIButton) {
-        guard let followedRecordings = UserDefaults.standard.array(forKey: Util.Constant.followedRecordingsKey) as? [String] else { return }
-        if followedRecordings.contains(recording.id) {
-            Util.unfollowRecording(id: recording.id)
-        } else {
-            Util.followRecording(recording: recording)
-        }
+        let followedRecordings = Util.getFollowedRecordings()
+        followedRecordings.contains(recording.id) ? Util.unfollowRecording(id: recording.id) : Util.followRecording(recording: recording)
         updateButtonImage()
     }
 }

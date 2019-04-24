@@ -63,7 +63,8 @@ class FollowingViewController: UIViewController {
     
     func populateArtists() {
         artists.removeAll()
-        guard let followedRecordings = UserDefaults.standard.array(forKey: Util.Constant.followedRecordingsKey) as? [String] else { return }
+        let followedRecordings = Util.getFollowedRecordings()
+        
         for id in followedRecordings {
             guard let artistID = (AppDelegate.recordings.first { $0.id == id })?.artists.first?.id else {
                 // Couldn't find the recording or artist

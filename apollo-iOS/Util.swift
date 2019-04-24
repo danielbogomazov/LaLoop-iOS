@@ -96,7 +96,7 @@ public class Util {
     ///
     /// - Parameter id: ID of the recording to unfollow
     static func unfollowRecording(id: String) {
-        guard var followedRecordings = UserDefaults.standard.array(forKey: Util.Constant.followedRecordingsKey) as? [String] else { return }
+        var followedRecordings = Util.getFollowedRecordings()
         guard let index = followedRecordings.firstIndex(of: id) else { return }
         
         followedRecordings.remove(at: index)
@@ -109,7 +109,7 @@ public class Util {
     /// - Parameters:
     ///   - recording: Recording for which the notification will be made for
     static func followRecording(recording: Recording) {
-        guard var followedRecordings = UserDefaults.standard.array(forKey: Util.Constant.followedRecordingsKey) as? [String] else { return }
+        var followedRecordings = Util.getFollowedRecordings()
         
         followedRecordings.append(recording.id)
         UserDefaults.standard.set(followedRecordings, forKey: Util.Constant.followedRecordingsKey)
@@ -127,5 +127,12 @@ public class Util {
         guard let years = Calendar.current.dateComponents([.year], from: Calendar.current.startOfDay(for: Date()), to: Calendar.current.startOfDay(for: date)).year else { return false }
         // TODO : years > 1000 is pretty hackish but it will do until the TBA standard is changed from the backend
         return years > 1000 ? true :  false
+    }
+    
+    static func getFollowedRecordings() -> [String] {
+        if UserDefaults.standard.array(forKey: Util.Constant.followedRecordingsKey) == nil {
+            UserDefaults.standard.set([], forKey: Util.Constant.followedRecordingsKey)
+        }
+        return UserDefaults.standard.array(forKey: Util.Constant.followedRecordingsKey) as! [String]
     }
 }

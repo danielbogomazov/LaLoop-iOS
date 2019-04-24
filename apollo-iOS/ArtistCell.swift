@@ -83,7 +83,7 @@ class ArtistCell: UITableViewCell {
     }
  
     func updateUpcomingLabel() {
-        guard let followedRecordings = UserDefaults.standard.array(forKey: Util.Constant.followedRecordingsKey) as? [String] else { return }
+        let followedRecordings = Util.getFollowedRecordings()
         var numRecordings = 0
         for recording in artist.recordings {
             if followedRecordings.contains(recording.id) {

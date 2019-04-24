@@ -298,11 +298,7 @@ extension BrowseViewController: UITableViewDelegate, UITableViewDataSource {
         
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         
-        if UserDefaults.standard.array(forKey: Util.Constant.followedRecordingsKey) == nil {
-            UserDefaults.standard.set([], forKey: Util.Constant.followedRecordingsKey)
-        }
-
-        guard let followedRecordings = UserDefaults.standard.array(forKey: Util.Constant.followedRecordingsKey) as? [String] else { return [] }
+        let followedRecordings = Util.getFollowedRecordings()
         let cell = tableView.cellForRow(at: indexPath) as! RecordingCell
         
         if followedRecordings.contains(cell.recording.id) {
