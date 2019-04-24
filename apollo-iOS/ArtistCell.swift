@@ -43,19 +43,19 @@ class ArtistCell: UITableViewCell {
         
         contentView.addSubview(expandImageView)
         expandImageView.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addConstraints([NSLayoutConstraint(item: expandImageView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .width, multiplier: 1.0, constant: 24),
-                                    NSLayoutConstraint(item: expandImageView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1.0, constant: 24),
+        contentView.addConstraints([NSLayoutConstraint(item: expandImageView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .width, multiplier: 1.0, constant: 18),
+                                    NSLayoutConstraint(item: expandImageView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1.0, constant: 18),
                                     NSLayoutConstraint(item: expandImageView, attribute: .centerY, relatedBy: .equal, toItem: contentView, attribute: .centerY, multiplier: 1.0, constant: 0),
-                                    NSLayoutConstraint(item: expandImageView, attribute: .right, relatedBy: .equal, toItem: contentView, attribute: .right, multiplier: 1.0, constant: -32)])
-        expandImageView.image = isExpanded ? #imageLiteral(resourceName: "ArrowUp") : #imageLiteral(resourceName: "ArrowDown")
+                                    NSLayoutConstraint(item: expandImageView, attribute: .left, relatedBy: .equal, toItem: contentView, attribute: .left, multiplier: 1.0, constant: 12)])
+        expandImageView.image = isExpanded ? #imageLiteral(resourceName: "ArrowOpen") : #imageLiteral(resourceName: "ArrowClosed")
 
         let wrapperView = UIView()
         contentView.addSubview(wrapperView)
         wrapperView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addConstraints([NSLayoutConstraint(item: wrapperView, attribute: .top, relatedBy: .equal, toItem: contentView, attribute: .top, multiplier: 1.0, constant: 8),
                                     NSLayoutConstraint(item: wrapperView, attribute: .bottom, relatedBy: .equal, toItem: contentView, attribute: .bottom, multiplier: 1.0, constant: -8),
-                                    NSLayoutConstraint(item: wrapperView, attribute: .left, relatedBy: .equal, toItem: contentView, attribute: .left, multiplier: 1.0, constant: 8),
-                                    NSLayoutConstraint(item: wrapperView, attribute: .right, relatedBy: .equal, toItem: expandImageView, attribute: .left, multiplier: 1.0, constant: -8)])
+                                    NSLayoutConstraint(item: wrapperView, attribute: .left, relatedBy: .equal, toItem: expandImageView, attribute: .right, multiplier: 1.0, constant: 8),
+                                    NSLayoutConstraint(item: wrapperView, attribute: .right, relatedBy: .equal, toItem: contentView, attribute: .right, multiplier: 1.0, constant: -8)])
 
         wrapperView.addSubview(artistLabel)
         artistLabel.translatesAutoresizingMaskIntoConstraints = false

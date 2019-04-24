@@ -71,7 +71,7 @@ class RecordingCell: UITableViewCell {
         contentView.addConstraints([NSLayoutConstraint(item: wrapperView, attribute: .top, relatedBy: .equal, toItem: contentView, attribute: .top, multiplier: 1.0, constant: 8),
                                     NSLayoutConstraint(item: wrapperView, attribute: .bottom, relatedBy: .equal, toItem: contentView, attribute: .bottom, multiplier: 1.0, constant: -8),
                                     NSLayoutConstraint(item: wrapperView, attribute: .left, relatedBy: .equal, toItem: contentView, attribute: .left, multiplier: 1.0, constant: 8),
-                                    NSLayoutConstraint(item: wrapperView, attribute: .right, relatedBy: .equal, toItem: rightItem, attribute: rightAttribute, multiplier: 1.0, constant: -8)])
+                                    NSLayoutConstraint(item: wrapperView, attribute: .right, relatedBy: .equal, toItem: rightItem, attribute: rightAttribute, multiplier: 1.0, constant: -16)])
         
         if !excludeArtist {
             wrapperView.addSubview(artistLabel)
@@ -131,7 +131,7 @@ class RecordingCell: UITableViewCell {
     
     func updateButtonImage() {
         let followedRecordings = Util.getFollowedRecordings()
-        followedRecordings.contains(recording.id) ? self.followingButton.setImage(#imageLiteral(resourceName: "Followed"), for: .normal) : self.followingButton.setImage(#imageLiteral(resourceName: "NotFollowed"), for: .normal)
+        followedRecordings.contains(recording.id) ? followingButton.setImage(#imageLiteral(resourceName: "Followed"), for: .normal) : followingButton.setImage(#imageLiteral(resourceName: "NotFollowed"), for: .normal)
     }
     
     @objc func followingButtonPressed(_ sender: UIButton) {
