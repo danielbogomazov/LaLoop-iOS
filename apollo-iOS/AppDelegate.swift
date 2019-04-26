@@ -34,6 +34,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
+        tabBarController.delegate = self
+        
         browseViewController.title = "apollo"
         browseNavController.title = "Browse"
         browseNavController.navigationBar.barStyle = .blackOpaque
@@ -153,3 +155,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 }
 
+// MARK: - UITabBarControllerDelegate
+extension AppDelegate: UITabBarControllerDelegate {
+    
+    func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
+        
+        if tabBarController.selectedViewController == viewController {
+            if let browseViewController = (viewController as? UINavigationController)?.topViewController as? BrowseViewController {
+                browseViewController.scrollTableViewToTop()
+            } else if let followViewController = (viewController as? UINavigationController)?.topViewController as? FollowingViewController {
+                followViewController.scrollTableViewToTop()
+            }
+        }
+        return true
+    }
+}

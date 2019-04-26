@@ -33,6 +33,7 @@ class FollowingViewController: UIViewController {
         setupNoneFollowingLabel()
         populateArtists()
         reloadTableView()
+        artistsTableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .none, animated: false)
     }
     
     override func didReceiveMemoryWarning() {
@@ -143,6 +144,10 @@ class FollowingViewController: UIViewController {
         noneFollowingLabel.textAlignment = .center
         noneFollowingLabel.textColor = Util.Color.main
         noneFollowingLabel.text = "Not following any artists"
+    }
+    
+    func scrollTableViewToTop() {
+        artistsTableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
     }
 }
 
