@@ -214,10 +214,3 @@ extension FollowingViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
 }
-
-// MARK: - UITableViewDelegate, UITableViewDataSource
-extension FollowingViewController: UITabBarControllerDelegate {
-    func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
-        print("BBB")
-    }
-}
