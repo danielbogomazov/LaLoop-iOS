@@ -15,6 +15,9 @@ class BrowseViewController: UIViewController {
     private lazy var searchBar = UISearchBar()
     private lazy var refreshControl = UIRefreshControl()
     private lazy var loadingView = UIView()
+    private lazy var connectionView = UIView()
+    private lazy var tryAgainButton = UIButton()
+    
     private var filteredRecordings: [Recording] = []
     
     override func viewDidLoad() {
@@ -22,6 +25,13 @@ class BrowseViewController: UIViewController {
         
         view.backgroundColor = Util.Color.backgroundColor
         
+        // Hide tabBar and navBar to animate them in once getData finishes
+        tabBarController?.tabBar.isHidden = true
+        navigationController?.navigationBar.isHidden = true
+        tabBarController?.tabBar.alpha = 0
+        navigationController?.navigationBar.alpha = 0
+
+        setupConectionView()
         setupTableView()
         setupLoadingView()
 
@@ -59,22 +69,76 @@ class BrowseViewController: UIViewController {
     }
     
     func setup(connected: Bool) {
-        self.navigationItem.rightBarButtonItem = connected ? UIBarButtonItem(image: #imageLiteral(resourceName: "ServerOK").withRenderingMode(.alwaysOriginal), style: .done, target: nil, action: nil) : UIBarButtonItem(image: #imageLiteral(resourceName: "ServerError").withRenderingMode(.alwaysOriginal), style: .done, target: nil, action: nil)
-        self.populateRecordings()
-        LocalNotif.update()
-        self.reloadTableView()
+        recordingsTableView.isHidden = !connected
+        connectionView.isHidden = connected
+        tryAgainButton.isEnabled = !connected
+        
+        if connected {
+            self.populateRecordings()
+            LocalNotif.update()
+            self.reloadTableView()
+        }
+    }
+    
+    func setupConectionView() {
+        
+        let top = navigationController?.navigationBar.frame.maxY ?? 0.0
+        let bottom = tabBarController?.tabBar.frame.height ?? 0.0
+        let labelHeight: CGFloat = 24
+        let margin: CGFloat = 64
+        let buttonHeight: CGFloat = 75
+
+        connectionView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(connectionView)
+        view.addConstraints([NSLayoutConstraint(item: connectionView, attribute: .top, relatedBy: .equal, toItem: view, attribute: .top, multiplier: 1.0, constant: top),
+                             NSLayoutConstraint(item: connectionView, attribute: .left, relatedBy: .equal, toItem: view, attribute: .left, multiplier: 1.0, constant: 0),
+                             NSLayoutConstraint(item: connectionView, attribute: .right, relatedBy: .equal, toItem: view, attribute: .right, multiplier: 1.0, constant: 0),
+                             NSLayoutConstraint(item: connectionView, attribute: .bottom, relatedBy: .equal, toItem: view, attribute: .bottom, multiplier: 1.0, constant: bottom)])
+        
+        let errorLabel = UILabel()
+        errorLabel.translatesAutoresizingMaskIntoConstraints = false
+        connectionView.addSubview(errorLabel)
+        connectionView.addConstraints([NSLayoutConstraint(item: errorLabel, attribute: .left, relatedBy: .equal, toItem: connectionView, attribute: .left, multiplier: 1.0, constant: 12),
+                                       NSLayoutConstraint(item: errorLabel, attribute: .right, relatedBy: .equal, toItem: connectionView, attribute: .right, multiplier: 1.0, constant: 12),
+                                       NSLayoutConstraint(item: errorLabel, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1.0, constant: labelHeight),
+                                       NSLayoutConstraint(item: errorLabel, attribute: .centerY, relatedBy: .equal, toItem: connectionView, attribute: .centerY, multiplier: 1.0, constant: -(buttonHeight + labelHeight + margin))])
+        errorLabel.text = "Couldn't connect to the internet"
+        errorLabel.textAlignment = .center
+        errorLabel.textColor = UIColor.white
+        
+        
+        tryAgainButton.translatesAutoresizingMaskIntoConstraints = false
+        connectionView.addSubview(tryAgainButton)
+        connectionView.addConstraints([NSLayoutConstraint(item: tryAgainButton, attribute: .top, relatedBy: .equal, toItem: errorLabel, attribute: .bottom, multiplier: 1.0, constant: margin),
+                                       NSLayoutConstraint(item: tryAgainButton, attribute: .centerX, relatedBy: .equal, toItem: connectionView, attribute: .centerX, multiplier: 1.0, constant: 0),
+                                       NSLayoutConstraint(item: tryAgainButton, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1.0, constant: buttonHeight),
+                                       NSLayoutConstraint(item: tryAgainButton, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .width, multiplier: 1.0, constant: buttonHeight * 3)])
+        tryAgainButton.backgroundColor = Util.Color.main.withAlphaComponent(0.1)
+        tryAgainButton.layer.borderColor = Util.Color.main.cgColor
+        tryAgainButton.layer.borderWidth = 2.0
+        tryAgainButton.layer.cornerRadius = buttonHeight / 2
+        tryAgainButton.setTitle("Try Again", for: .normal)
+        tryAgainButton.setTitle("Connecting...", for: .disabled)
+        tryAgainButton.setTitleColor(UIColor.white.withAlphaComponent(0.85), for: .normal)
+        tryAgainButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
+        tryAgainButton.addTarget(self, action: #selector(tryAgainButtonPressed(_:)), for: .touchUpInside)
+        
+    }
+    
+    @objc func tryAgainButtonPressed(_ sender: UIButton) {
+        
+        tryAgainButton.isEnabled = false
+        getData(completionHandler: { success in
+            DispatchQueue.main.async {
+                self.setup(connected: success)
+            }
+        })
     }
     
     func setupLoadingView() {
-        tabBarController?.tabBar.isHidden = true
-        navigationController?.navigationBar.isHidden = true
-        tabBarController?.tabBar.alpha = 0
-        navigationController?.navigationBar.alpha = 0
         
         loadingView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(loadingView)
-        
-        
         view.addConstraints([NSLayoutConstraint(item: loadingView, attribute: .top, relatedBy: .equal, toItem: view, attribute: .topMargin, multiplier: 1.0, constant: 0),
                              NSLayoutConstraint(item: loadingView, attribute: .left, relatedBy: .equal, toItem: view, attribute: .left, multiplier: 1.0, constant: 0),
                              NSLayoutConstraint(item: loadingView, attribute: .right, relatedBy: .equal, toItem: view, attribute: .right, multiplier: 1.0, constant: 0),
