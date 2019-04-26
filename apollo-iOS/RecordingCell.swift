@@ -48,8 +48,6 @@ class RecordingCell: UITableViewCell {
         super.init(style: .default, reuseIdentifier: "recordingCell")
         
         recordingObj = recording
-        
-        backgroundColor = UIColor.clear
         selectionStyle = .none
         
         if !excludeFollowingButton {
@@ -123,6 +121,9 @@ class RecordingCell: UITableViewCell {
         } else {
             dateLabel.text = "TBA"
         }
+        
+        backgroundColor = (dateLabel.text == "Releasing Today" && Util.getFollowedRecordings().contains(recording.id)) ? Util.Color.main.withAlphaComponent(0.2) : UIColor.clear
+
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -138,5 +139,6 @@ class RecordingCell: UITableViewCell {
         let followedRecordings = Util.getFollowedRecordings()
         followedRecordings.contains(recording.id) ? Util.unfollowRecording(id: recording.id) : Util.followRecording(recording: recording)
         updateButtonImage()
+        backgroundColor = (dateLabel.text == "Releasing Today" && Util.getFollowedRecordings().contains(recording.id)) ? Util.Color.main.withAlphaComponent(0.2) : UIColor.clear
     }
 }
