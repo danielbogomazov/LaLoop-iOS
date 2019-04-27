@@ -9,24 +9,22 @@
 import UIKit
 
 class RecordingCell: UITableViewCell {
+    
     private lazy var followingButton = UIButton()
     private lazy var dateLabel = UILabel()
     private lazy var recordingLabel = UILabel()
     private lazy var artistLabel = UILabel()
-    private var recordingObj: Recording!
+
+    var recordingViewModel: RecordingViewModel! {
+        didSet {
+            artistLabel.text = recordingViewModel.artistName
+            recordingLabel.text = recordingViewModel.recordingName
+            dateLabel.text = recordingViewModel.releaseDate
+            followingButton.setImage(recordingViewModel.followingImage, for: .normal)
+            backgroundColor = recordingViewModel.backgroundColor
+        }
+    }
     
-    var releaseDate: String {
-        get { return dateLabel.text! }
-    }
-    var recordingName: String {
-        get { return recordingLabel.text! }
-    }
-    var artistName: String {
-        get { return artistLabel.text! }
-    }
-    var recording: Recording {
-        get { return recordingObj }
-    }
     var bgColor: UIColor? {
         get { return backgroundColor }
         set { backgroundColor = newValue }
@@ -44,10 +42,9 @@ class RecordingCell: UITableViewCell {
         set { artistLabel.setupLabel(fontWeight: .black, fontSize: newValue, textColor: Util.Color.main) }
     }
     
-    init(recording: Recording, excludeFollowingButton: Bool = false, excludeArtist: Bool = false, excludeRecording: Bool = false) {
+    init(excludeFollowingButton: Bool = false, excludeArtist: Bool = false, excludeRecording: Bool = false) {
         super.init(style: .default, reuseIdentifier: "recordingCell")
         
-        recordingObj = recording
         selectionStyle = .none
         
         if !excludeFollowingButton {
@@ -58,7 +55,6 @@ class RecordingCell: UITableViewCell {
                                         NSLayoutConstraint(item: followingButton, attribute: .centerY, relatedBy: .equal, toItem: contentView, attribute: .centerY, multiplier: 1.0, constant: 0),
                                         NSLayoutConstraint(item: followingButton, attribute: .right, relatedBy: .equal, toItem: contentView, attribute: .right, multiplier: 1.0, constant: -32)])
             followingButton.addTarget(self, action: #selector(followingButtonPressed(_:)), for: .touchUpInside)
-            updateButtonImage()
         }
         
         let wrapperView = UIView()
@@ -80,7 +76,6 @@ class RecordingCell: UITableViewCell {
                                         NSLayoutConstraint(item: artistLabel, attribute: .right, relatedBy: .equal, toItem: wrapperView, attribute: .right, multiplier: 1.0, constant: 0),
                                         NSLayoutConstraint(item: artistLabel, attribute: .height, relatedBy: .equal, toItem: wrapperView, attribute: .height, multiplier: heightMultiplier, constant: 0)])
             artistLabel.setupLabel(fontWeight: .black, fontSize: artistLabel.font.pointSize, textColor: Util.Color.main)
-            artistLabel.text = recordingObj.artists.first?.name ?? "Unknown Artist"
         }
         
         let heightMultiplier: CGFloat = (excludeArtist && excludeRecording) ? 1.0 : (excludeArtist || excludeRecording) ? 0.5 : 0.3
@@ -95,7 +90,6 @@ class RecordingCell: UITableViewCell {
                                         NSLayoutConstraint(item: recordingLabel, attribute: .right, relatedBy: .equal, toItem: wrapperView, attribute: .right, multiplier: 1.0, constant: 0),
                                         NSLayoutConstraint(item: recordingLabel, attribute: .height, relatedBy: .equal, toItem: wrapperView, attribute: .height, multiplier: heightMultiplier, constant: 0)])
             recordingLabel.setupLabel(fontWeight: .heavy, fontSize: recordingLabel.font.pointSize)
-            recordingLabel.text = recording.name != "" ? recording.name : "TBA"
         }
         
         wrapperView.addSubview(dateLabel)
@@ -107,38 +101,13 @@ class RecordingCell: UITableViewCell {
                                     NSLayoutConstraint(item: dateLabel, attribute: .right, relatedBy: .equal, toItem: wrapperView, attribute: .right, multiplier: 1.0, constant: 0),
                                     NSLayoutConstraint(item: dateLabel, attribute: .height, relatedBy: .equal, toItem: wrapperView, attribute: .height, multiplier: heightMultiplier, constant: 0)])
         dateLabel.setupLabel(fontWeight: .regular, fontSize: dateLabel.font.pointSize)
-        if let date = recording.release_date {
-            let formatter = DateFormatter()
-            if Util.isTBA(date: date) {
-                let newDate = Calendar.current.date(byAdding: .year, value: -1999, to: date)
-                formatter.dateFormat = "MMMM YYYY"
-                dateLabel.text = formatter.string(from: newDate ?? date)
-            } else {
-                formatter.dateFormat = "MMMM dd YYYY"
-                let releaseDate = formatter.string(from: date)
-                dateLabel.text = releaseDate == formatter.string(from: Date()) ? "Releasing Today" : releaseDate
-            }
-        } else {
-            dateLabel.text = "TBA"
-        }
-        
-        backgroundColor = (dateLabel.text == "Releasing Today" && Util.getFollowedRecordings().contains(recording.id)) ? Util.Color.main.withAlphaComponent(0.2) : UIColor.clear
-
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func updateButtonImage() {
-        let followedRecordings = Util.getFollowedRecordings()
-        followedRecordings.contains(recording.id) ? followingButton.setImage(#imageLiteral(resourceName: "Followed"), for: .normal) : followingButton.setImage(#imageLiteral(resourceName: "NotFollowed"), for: .normal)
-    }
-    
     @objc func followingButtonPressed(_ sender: UIButton) {
-        let followedRecordings = Util.getFollowedRecordings()
-        followedRecordings.contains(recording.id) ? Util.unfollowRecording(id: recording.id) : Util.followRecording(recording: recording)
-        updateButtonImage()
-        backgroundColor = (dateLabel.text == "Releasing Today" && Util.getFollowedRecordings().contains(recording.id)) ? Util.Color.main.withAlphaComponent(0.2) : UIColor.clear
+        recordingViewModel.changeFollowingStatus()
     }
 }

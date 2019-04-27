@@ -29,6 +29,8 @@
 		65B49D25226BE77700813506 /* DateExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B49D24226BE77700813506 /* DateExtension.swift */; };
 		65C48AFD223B0B6900231B32 /* FollowingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C48AFC223B0B6900231B32 /* FollowingViewController.swift */; };
 		65C48B01223BE70C00231B32 /* UILabelExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C48B00223BE70C00231B32 /* UILabelExtension.swift */; };
+		65EC7B9A2274EF090077BBBD /* ArtistViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65EC7B992274EF090077BBBD /* ArtistViewModel.swift */; };
+		65EC7B9C2274F7690077BBBD /* RecordingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65EC7B9B2274F7690077BBBD /* RecordingViewModel.swift */; };
 		65FD31E721DC75A600C9BE90 /* LocalNotif.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65FD31E621DC75A600C9BE90 /* LocalNotif.swift */; };
 /* End PBXBuildFile section */
 
@@ -57,6 +59,8 @@
 		65B49D24226BE77700813506 /* DateExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateExtension.swift; sourceTree = "<group>"; };
 		65C48AFC223B0B6900231B32 /* FollowingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowingViewController.swift; sourceTree = "<group>"; };
 		65C48B00223BE70C00231B32 /* UILabelExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UILabelExtension.swift; sourceTree = "<group>"; };
+		65EC7B992274EF090077BBBD /* ArtistViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistViewModel.swift; sourceTree = "<group>"; };
+		65EC7B9B2274F7690077BBBD /* RecordingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingViewModel.swift; sourceTree = "<group>"; };
 		65FD31E621DC75A600C9BE90 /* LocalNotif.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalNotif.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -90,6 +94,8 @@
 		6523EEA121CDDBD200EF0333 /* apollo-iOS */ = {
 			isa = PBXGroup;
 			children = (
+				65EC7B962274EC6C0077BBBD /* Views */,
+				65EC7B952274EC280077BBBD /* ViewModels */,
 				65C48B02223BE73900231B32 /* Extensions */,
 				6523EED521CDE42000EF0333 /* Supporting Files */,
 				6523EECF21CDDED300EF0333 /* CoreData */,
@@ -151,8 +157,6 @@
 			children = (
 				6523EED921CDE7CE00EF0333 /* BrowseViewController.swift */,
 				65C48AFC223B0B6900231B32 /* FollowingViewController.swift */,
-				653EA79222498527005B9C35 /* RecordingCell.swift */,
-				653EA7942249F0FE005B9C35 /* ArtistCell.swift */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -164,6 +168,24 @@
 				65B49D24226BE77700813506 /* DateExtension.swift */,
 			);
 			name = Extensions;
+			sourceTree = "<group>";
+		};
+		65EC7B952274EC280077BBBD /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				65EC7B992274EF090077BBBD /* ArtistViewModel.swift */,
+				65EC7B9B2274F7690077BBBD /* RecordingViewModel.swift */,
+			);
+			name = ViewModels;
+			sourceTree = "<group>";
+		};
+		65EC7B962274EC6C0077BBBD /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				653EA7942249F0FE005B9C35 /* ArtistCell.swift */,
+				653EA79222498527005B9C35 /* RecordingCell.swift */,
+			);
+			name = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -245,8 +267,10 @@
 				6523EEC721CDDEC400EF0333 /* Label+CoreDataClass.swift in Sources */,
 				65B49D25226BE77700813506 /* DateExtension.swift in Sources */,
 				6523EEC821CDDEC400EF0333 /* Label+CoreDataProperties.swift in Sources */,
+				65EC7B9A2274EF090077BBBD /* ArtistViewModel.swift in Sources */,
 				6523EEDA21CDE7CE00EF0333 /* BrowseViewController.swift in Sources */,
 				6523EECA21CDDEC400EF0333 /* Recording+CoreDataProperties.swift in Sources */,
+				65EC7B9C2274F7690077BBBD /* RecordingViewModel.swift in Sources */,
 				6523EED721CDE44500EF0333 /* Util.swift in Sources */,
 				6523EEC621CDDEC400EF0333 /* RecordingInformation+CoreDataProperties.swift in Sources */,
 				65FD31E721DC75A600C9BE90 /* LocalNotif.swift in Sources */,

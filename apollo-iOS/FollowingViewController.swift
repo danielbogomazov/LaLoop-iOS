@@ -17,7 +17,7 @@ class FollowingViewController: UIViewController {
 
     struct ArtistStruct {
         var obj: Artist
-        var isOpen: Bool
+        var isExpanded: Bool
         var followedRecordings: [Recording]
     }
     
@@ -88,7 +88,7 @@ class FollowingViewController: UIViewController {
                 if let index = artists.firstIndex(where: { $0.obj == artist }) {
                     artists[index].followedRecordings.append(recording)
                 } else {
-                    artists.append(ArtistStruct(obj: artist, isOpen: false, followedRecordings: [recording]))
+                    artists.append(ArtistStruct(obj: artist, isExpanded: false, followedRecordings: [recording]))
                 }
             } catch let error as NSError {
                 print("Could not fetch. \(error), \(error.userInfo)")
@@ -114,12 +114,12 @@ class FollowingViewController: UIViewController {
         self.present(alert, animated: true, completion: nil)
     }
     
-    func unfollowPromptForRecording(_ recording: Recording, indexPath: IndexPath) {
+    func unfollowPromptForRecording(indexPath: IndexPath) {
         let alert = UIAlertController(title: "Unfollow Recording", message: "Unfollow this recording?", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         alert.addAction(UIAlertAction(title: "Unfollow", style: .destructive, handler: { _ in
             DispatchQueue.main.async {
-                Util.unfollowRecording(id: (self.artistsTableView.cellForRow(at: indexPath) as! RecordingCell).recording.id)
+                Util.unfollowRecording(id: (self.artistsTableView.cellForRow(at: indexPath) as! RecordingCell).recordingViewModel.recordingID)
                 self.artists[indexPath.section].followedRecordings.remove(at: indexPath.row - 1)
                 let obj = self.artists[indexPath.section]
                 if obj.followedRecordings.count == 0 {
@@ -127,7 +127,7 @@ class FollowingViewController: UIViewController {
                     self.artistsTableView.deleteSections(IndexSet(integer: indexPath.section), with: .fade)
                 } else {
                     self.artistsTableView.deleteRows(at: [indexPath], with: .fade)
-                    (self.artistsTableView.cellForRow(at: IndexPath(row: 0, section: indexPath.section)) as! ArtistCell).updateUpcomingLabel()
+                    (self.artistsTableView.cellForRow(at: IndexPath(row: 0, section: indexPath.section)) as! ArtistCell).artistViewModel.update()
                 }
                 self.noneFollowingLabel.isHidden = self.artists.count > 0
             }
@@ -167,7 +167,7 @@ extension FollowingViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return artists[section].isOpen ? artists[section].followedRecordings.count + 1 : 1
+        return artists[section].isExpanded ? artists[section].followedRecordings.count + 1 : 1
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -192,13 +192,17 @@ extension FollowingViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.row == 0 {
-            let cell = ArtistCell(artist: artists[indexPath.section].obj, isExpanded: artists[indexPath.section].isOpen)
+            let cell = ArtistCell()
+            cell.artistViewModel = ArtistViewModel(artist: artists[indexPath.section].obj)
+            cell.artistViewModel.isExpanded = artists[indexPath.section].isExpanded
+            cell.artistViewModel.update()
             cell.artistLabelFontSize = 18.0
             cell.upcomingLabelFontSize = 12.0
             return cell
         } else {
             let recordings = Array(artists[indexPath.section].followedRecordings)
-            let cell = RecordingCell(recording: recordings[indexPath.row - 1], excludeFollowingButton: true, excludeArtist: true)
+            let cell = RecordingCell(excludeFollowingButton: true, excludeArtist: true)
+            cell.recordingViewModel = RecordingViewModel(recording: recordings[indexPath.row - 1])
             cell.recordingLabelFontSize = 20.0
             cell.dateLabelFontSize = 16.0
             return cell
@@ -207,7 +211,7 @@ extension FollowingViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.row == 0 {
-            artists[indexPath.section].isOpen = !artists[indexPath.section].isOpen
+            artists[indexPath.section].isExpanded = !artists[indexPath.section].isExpanded
             tableView.reloadSections([indexPath.section], with: .none)
         }
     }
@@ -215,8 +219,7 @@ extension FollowingViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
 
         let unfollow = UITableViewRowAction(style: .destructive, title: "Unfollow") { (_, _) in
-            indexPath.row == 0 ? self.unfollowPromptForArtist(self.artists[indexPath.section], indexPath: indexPath) :
-                self.unfollowPromptForRecording((tableView.cellForRow(at: indexPath) as! RecordingCell).recording, indexPath: indexPath)
+            indexPath.row == 0 ? self.unfollowPromptForArtist(self.artists[indexPath.section], indexPath: indexPath) : self.unfollowPromptForRecording(indexPath: indexPath)
         }
         unfollow.backgroundColor = UIColor.red
         return [unfollow]

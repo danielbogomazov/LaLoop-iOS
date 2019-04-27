@@ -369,7 +369,8 @@ extension BrowseViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let recording = filteredRecordings.count == 0 ? AppDelegate.recordings[indexPath.row] : filteredRecordings[indexPath.row]
-        let cell = RecordingCell(recording: recording)
+        let cell = RecordingCell()
+        cell.recordingViewModel = RecordingViewModel(recording: recording)
         cell.artistLabelFontSize = 28.0
         cell.recordingLabelFontSize = 20.0
         cell.dateLabelFontSize = 16.0
@@ -378,22 +379,20 @@ extension BrowseViewController: UITableViewDelegate, UITableViewDataSource {
         
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         
-        let followedRecordings = Util.getFollowedRecordings()
-        let cell = tableView.cellForRow(at: indexPath) as! RecordingCell
-        
-        if followedRecordings.contains(cell.recording.id) {
+        let cell = tableView.cellForRow(at: indexPath) as! RecordingCell        
+        if cell.recordingViewModel.isFollowed {
             let unfollow = UITableViewRowAction(style: .default, title: "Unfollow") { (_, _) in
-                Util.unfollowRecording(id: cell.recording.id)
                 DispatchQueue.main.async {
-                    cell.updateButtonImage()
+                    cell.recordingViewModel.changeFollowingStatus()
                 }
             }
             unfollow.backgroundColor = UIColor.red
             return [unfollow]
         } else {
             let follow = UITableViewRowAction(style: .default, title: "Follow") { (_, _) in
-                Util.followRecording(recording: cell.recording)
-                cell.updateButtonImage()
+                DispatchQueue.main.async {
+                    cell.recordingViewModel.changeFollowingStatus()
+                }
             }
             follow.backgroundColor = Util.Color.secondary
             return [follow]
