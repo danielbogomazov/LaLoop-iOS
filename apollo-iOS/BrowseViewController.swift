@@ -289,6 +289,7 @@ class BrowseViewController: UIViewController {
         dateComponents.minute = 0
         let currDate = Calendar.current.date(from: dateComponents) ?? Date()
 
+        formatter.dateFormat = "yyyyMM"
         let request: NSFetchRequest<Recording> = Recording.fetchRequest()
         request.sortDescriptors = [NSSortDescriptor(key: "release_date", ascending: true)]
         request.predicate = NSPredicate(format: "release_date >= %@ OR release_date == nil", currDate as NSDate)
@@ -298,9 +299,17 @@ class BrowseViewController: UIViewController {
                 guard var first = $0.release_date, var second = $1.release_date else { return ($0.release_date != nil && $1.release_date == nil )}
                 if Util.isTBA(date: first) {
                     first = Calendar.current.date(byAdding: .year, value: -1999, to: first) ?? first
+                    if !Util.isTBA(date: second) && formatter.string(from: first) == formatter.string(from: second) {
+                        // If first and second are in the same year/month but only first is a TBA date, push first back
+                        return first > second
+                    }
                 }
                 if Util.isTBA(date: second) {
                     second = Calendar.current.date(byAdding: .year, value: -1999, to: second) ?? second
+                    if !Util.isTBA(date: first) && formatter.string(from: first) == formatter.string(from: second) {
+                        // If first and second are in the same year/month but only second is a TBA date, push second back
+                        return first > second
+                    }
                 }
                 return first < second
             }
