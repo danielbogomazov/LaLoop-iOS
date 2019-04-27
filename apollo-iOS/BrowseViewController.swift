@@ -370,6 +370,8 @@ extension BrowseViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let recording = filteredRecordings.count == 0 ? AppDelegate.recordings[indexPath.row] : filteredRecordings[indexPath.row]
         let cell = RecordingCell()
+        cell.includeArtistLabel = true
+        cell.includeFollowingButton = true
         cell.recordingViewModel = RecordingViewModel(recording: recording)
         cell.artistLabelFontSize = 28.0
         cell.recordingLabelFontSize = 20.0
@@ -379,7 +381,7 @@ extension BrowseViewController: UITableViewDelegate, UITableViewDataSource {
         
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         
-        let cell = tableView.cellForRow(at: indexPath) as! RecordingCell        
+        let cell = tableView.cellForRow(at: indexPath) as! RecordingCell
         if cell.recordingViewModel.isFollowed {
             let unfollow = UITableViewRowAction(style: .default, title: "Unfollow") { (_, _) in
                 DispatchQueue.main.async {

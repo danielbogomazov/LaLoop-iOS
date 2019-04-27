@@ -201,7 +201,7 @@ extension FollowingViewController: UITableViewDelegate, UITableViewDataSource {
             return cell
         } else {
             let recordings = Array(artists[indexPath.section].followedRecordings)
-            let cell = RecordingCell(excludeFollowingButton: true, excludeArtist: true)
+            let cell = RecordingCell()
             cell.recordingViewModel = RecordingViewModel(recording: recordings[indexPath.row - 1])
             cell.recordingLabelFontSize = 20.0
             cell.dateLabelFontSize = 16.0
