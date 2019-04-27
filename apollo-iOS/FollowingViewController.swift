@@ -94,6 +94,7 @@ class FollowingViewController: UIViewController {
                 print("Could not fetch. \(error), \(error.userInfo)")
             }
         }
+        artists.sort { $0.obj.name < $1.obj.name }
         noneFollowingLabel.isHidden = artists.count > 0
     }
     
