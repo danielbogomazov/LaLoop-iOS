@@ -95,7 +95,7 @@ class RecordingCell: UITableViewCell {
                                         NSLayoutConstraint(item: recordingLabel, attribute: .right, relatedBy: .equal, toItem: wrapperView, attribute: .right, multiplier: 1.0, constant: 0),
                                         NSLayoutConstraint(item: recordingLabel, attribute: .height, relatedBy: .equal, toItem: wrapperView, attribute: .height, multiplier: heightMultiplier, constant: 0)])
             recordingLabel.setupLabel(fontWeight: .heavy, fontSize: recordingLabel.font.pointSize)
-            recordingLabel.text = recording.name
+            recordingLabel.text = recording.name != "" ? recording.name : "TBA"
         }
         
         wrapperView.addSubview(dateLabel)
