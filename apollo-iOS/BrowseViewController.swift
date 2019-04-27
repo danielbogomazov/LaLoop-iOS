@@ -55,8 +55,11 @@ class BrowseViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
 
-    func scrollTableViewToTop() {
-        recordingsTableView.scrollToRow(at: IndexPath(item: 0, section: 0), at: .top, animated: true)
+    func scrollTableViewToTop(animated: Bool = true) {
+        let indexPath = IndexPath(row: 0, section: 0)
+        if recordingsTableView.cellForRow(at: indexPath) != nil {
+            recordingsTableView.scrollToRow(at: indexPath, at: .top, animated: animated)
+        }
     }
     
     func hideLoadingView() {

@@ -33,7 +33,7 @@ class FollowingViewController: UIViewController {
         setupNoneFollowingLabel()
         populateArtists()
         reloadTableView()
-        artistsTableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .none, animated: false)
+        scrollTableViewToTop(animated: false)
     }
     
     override func didReceiveMemoryWarning() {
@@ -146,8 +146,11 @@ class FollowingViewController: UIViewController {
         noneFollowingLabel.text = "Not following any artists"
     }
     
-    func scrollTableViewToTop() {
-        artistsTableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
+    func scrollTableViewToTop(animated: Bool = true) {
+        let indexPath = IndexPath(row: 0, section: 0)
+        if artistsTableView.cellForRow(at: indexPath) != nil {
+            artistsTableView.scrollToRow(at: indexPath, at: .top, animated: animated)
+        }
     }
 }
 
