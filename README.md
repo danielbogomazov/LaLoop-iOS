@@ -1,5 +1,5 @@
-# apollo-iOS
-iOS application used to display upcoming music using the apollo webscraper
+# LaLoop-iOS
+iOS application used to display upcoming music using the [apollo webscraper](https://github.com/danielbogomazov/apollo)
 
 ## Version
 Pre-alpha. Working on this application simultaneously to [apollo](https://github.com/danielbogomazov/apollo). A large change in one may affect the other greatly.
