@@ -149,8 +149,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         tabBarItem.selectedImage = selectedImage.withRenderingMode(.alwaysOriginal)
         tabBarItem.setTitleTextAttributes([.foregroundColor: Util.Color.main], for: .selected)
         tabBarItem.setTitleTextAttributes([.foregroundColor: UIColor.white], for: .normal)
-        tabBarItem.titlePositionAdjustment = UIOffset(horizontal: 0, vertical: 8)
-        tabBarItem.imageInsets = UIEdgeInsets(top: 8, left: 0, bottom: -8, right: 0)
     }
 
 }
