@@ -221,7 +221,7 @@ extension FollowingViewController: UITableViewDelegate, UITableViewDataSource {
         let unfollow = UITableViewRowAction(style: .destructive, title: "Unfollow") { (_, _) in
             indexPath.row == 0 ? self.unfollowPromptForArtist(self.artists[indexPath.section], indexPath: indexPath) : self.unfollowPromptForRecording(indexPath: indexPath)
         }
-        unfollow.backgroundColor = UIColor.red
+        unfollow.backgroundColor = .red
         return [unfollow]
     }
     

@@ -111,7 +111,7 @@ class BrowseViewController: UIViewController {
                                        NSLayoutConstraint(item: errorLabel, attribute: .centerY, relatedBy: .equal, toItem: connectionView, attribute: .centerY, multiplier: 1.0, constant: -(buttonHeight + labelHeight + margin))])
         errorLabel.text = "Couldn't connect to the internet"
         errorLabel.textAlignment = .center
-        errorLabel.textColor = UIColor.white
+        errorLabel.textColor = .white
         
         
         tryAgainButton.translatesAutoresizingMaskIntoConstraints = false
@@ -174,7 +174,7 @@ class BrowseViewController: UIViewController {
         upcomingLabel.text = "Upcoming Music Releases"
         upcomingLabel.font = UIFont.systemFont(ofSize: 17)
         upcomingLabel.textAlignment = .center
-        upcomingLabel.textColor = UIColor.white
+        upcomingLabel.textColor = .white
     }
     
     func getData(completionHandler: @escaping (Bool) -> ()) {
@@ -357,7 +357,7 @@ extension BrowseViewController: UITableViewDelegate, UITableViewDataSource {
         searchBar.barTintColor = Util.Color.backgroundColor
         searchBar.showsCancelButton = true
         searchBar.tintColor = Util.Color.secondary
-        (searchBar.value(forKey: "searchField") as? UITextField)?.textColor = UIColor.white
+        (searchBar.value(forKey: "searchField") as? UITextField)?.textColor = .white
         searchBar.delegate = self
 
         return view
@@ -388,7 +388,7 @@ extension BrowseViewController: UITableViewDelegate, UITableViewDataSource {
                     cell.recordingViewModel.changeFollowingStatus()
                 }
             }
-            unfollow.backgroundColor = UIColor.red
+            unfollow.backgroundColor = .red
             return [unfollow]
         } else {
             let follow = UITableViewRowAction(style: .default, title: "Follow") { (_, _) in

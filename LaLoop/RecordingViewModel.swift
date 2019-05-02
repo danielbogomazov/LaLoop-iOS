@@ -16,7 +16,7 @@ struct RecordingViewModel {
     var recordingName = "TBA"
     var releaseDate = "TBA"
     var isFollowed = false
-    var backgroundColor = UIColor.clear
+    var backgroundColor: UIColor = .clear
     var recordingID = ""
     var followingImage = #imageLiteral(resourceName: "NotFollowed")
 
@@ -47,7 +47,7 @@ struct RecordingViewModel {
 
         isFollowed = Util.getFollowedRecordings().contains(recording.id)
         followingImage = isFollowed ? #imageLiteral(resourceName: "Followed") : #imageLiteral(resourceName: "NotFollowed")
-        backgroundColor = releaseDate == "Releasing Today" && isFollowed ? Util.Color.main.withAlphaComponent(0.2) : UIColor.clear
+        backgroundColor = releaseDate == "Releasing Today" && isFollowed ? Util.Color.main.withAlphaComponent(0.2) : .clear
     }
     
     mutating func changeFollowingStatus() {

@@ -51,7 +51,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         followingViewController.restorationIdentifier = "followingNavController"
         
         tabBarController.tabBar.barStyle = .blackOpaque
-        tabBarController.tabBar.tintColor = UIColor.white
+        tabBarController.tabBar.tintColor = .white
         tabBarController.viewControllers = [browseNavController, followingNavController]
         
         window = UIWindow(frame: UIScreen.main.bounds)
@@ -148,7 +148,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         tabBarItem.image = image.withRenderingMode(.alwaysOriginal)
         tabBarItem.selectedImage = selectedImage.withRenderingMode(.alwaysOriginal)
         tabBarItem.setTitleTextAttributes([.foregroundColor: Util.Color.main], for: .selected)
-        tabBarItem.setTitleTextAttributes([.foregroundColor: UIColor.white], for: .normal)
+        tabBarItem.setTitleTextAttributes([.foregroundColor: .white], for: .normal)
     }
 
 }
