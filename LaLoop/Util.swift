@@ -29,7 +29,7 @@ public class Util {
     }
     
     struct Constant {
-        static let url = "https://apolloios.ddns.net"
+        static let url = "http://107.152.35.241/json/recordings/current.json" // apollo webserver
         static let followedRecordingsKey = "Followed Recordings"
     }
     
