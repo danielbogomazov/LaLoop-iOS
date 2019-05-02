@@ -148,7 +148,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         tabBarItem.image = image.withRenderingMode(.alwaysOriginal)
         tabBarItem.selectedImage = selectedImage.withRenderingMode(.alwaysOriginal)
         tabBarItem.setTitleTextAttributes([.foregroundColor: Util.Color.main], for: .selected)
-        tabBarItem.setTitleTextAttributes([.foregroundColor: .white], for: .normal)
+        tabBarItem.setTitleTextAttributes([.foregroundColor: UIColor.white], for: .normal)
     }
 
 }
