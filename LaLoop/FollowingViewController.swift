@@ -43,15 +43,14 @@ class FollowingViewController: UIViewController {
     
     func setupTableView() {
         
-        artistsTableView = UITableView(frame: CGRect(), style: .grouped)
+        artistsTableView = UITableView(frame: .zero, style: .grouped)
         artistsTableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(artistsTableView)
-        let top = navigationController?.navigationBar.frame.maxY ?? 0
-        let bottom = tabBarController?.tabBar.frame.height ?? 0
-        view.addConstraints([NSLayoutConstraint(item: artistsTableView, attribute: .top, relatedBy: .equal, toItem: view, attribute: .top, multiplier: 1.0, constant: top),
+
+        view.addConstraints([NSLayoutConstraint(item: artistsTableView, attribute: .top, relatedBy: .equal, toItem: view, attribute: .top, multiplier: 1.0, constant: 0),
                              NSLayoutConstraint(item: artistsTableView, attribute: .left, relatedBy: .equal, toItem: view, attribute: .left, multiplier: 1.0, constant: 0),
                              NSLayoutConstraint(item: artistsTableView, attribute: .right, relatedBy: .equal, toItem: view, attribute: .right, multiplier: 1.0, constant: 0),
-                             NSLayoutConstraint(item: artistsTableView, attribute: .bottom, relatedBy: .equal, toItem: view, attribute: .bottom, multiplier: 1.0, constant: -bottom)])
+                             NSLayoutConstraint(item: artistsTableView, attribute: .bottom, relatedBy: .equal, toItem: view, attribute: .bottom, multiplier: 1.0, constant: 0)])
         artistsTableView.backgroundColor = Util.Color.backgroundColor
         artistsTableView.delegate = self
         artistsTableView.dataSource = self

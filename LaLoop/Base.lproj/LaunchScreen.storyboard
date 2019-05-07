@@ -19,10 +19,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsLetterSpacingToFitWidth="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wH6-MZ-066">
-                                <rect key="frame" x="8" y="200" width="359" height="58"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="58" id="PaL-Vn-AGn"/>
-                                </constraints>
+                                <rect key="frame" x="0.0" y="271.5" width="375" height="51.5"/>
                                 <attributedString key="attributedText">
                                     <fragment content="LaLoop">
                                         <attributes>
@@ -35,10 +32,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Upcoming Music Releases" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VF1-xk-8Nn">
-                                <rect key="frame" x="8" y="266" width="359" height="21"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="21" id="diJ-Ej-cE4"/>
-                                </constraints>
+                                <rect key="frame" x="87" y="323" width="201.5" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
@@ -46,12 +40,11 @@
                         </subviews>
                         <color key="backgroundColor" red="0.11764705882352941" green="0.11764705882352941" blue="0.11764705882352941" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="VF1-xk-8Nn" firstAttribute="top" secondItem="wH6-MZ-066" secondAttribute="bottom" constant="8" id="8Kp-dg-iyi"/>
-                            <constraint firstItem="wH6-MZ-066" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="180" id="Lxt-OR-prT"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="VF1-xk-8Nn" secondAttribute="trailing" constant="8" id="SWs-kc-ppa"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="wH6-MZ-066" secondAttribute="trailing" constant="8" id="dwa-Pl-i0J"/>
-                            <constraint firstItem="VF1-xk-8Nn" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="8" id="lsZ-jj-2rX"/>
-                            <constraint firstItem="wH6-MZ-066" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="8" id="v4U-bA-MXd"/>
+                            <constraint firstItem="VF1-xk-8Nn" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="18N-7a-xor"/>
+                            <constraint firstItem="wH6-MZ-066" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="DYP-6H-LbB"/>
+                            <constraint firstItem="VF1-xk-8Nn" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="Dmy-C4-zKG"/>
+                            <constraint firstItem="VF1-xk-8Nn" firstAttribute="top" secondItem="wH6-MZ-066" secondAttribute="bottom" id="IeU-PF-uQC"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="wH6-MZ-066" secondAttribute="trailing" id="Nrm-9u-WTl"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>

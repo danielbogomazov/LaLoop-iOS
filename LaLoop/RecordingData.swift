@@ -13,11 +13,6 @@ struct RecordingData: Decodable {
     var recordings: [RecordingObj]
 }
 
-struct GenreObj: Decodable {
-    var genre_id: String
-    var genre_name: String
-}
-
 struct RecordingObj: Decodable {
     var recording_id: String
     var recording_name: String
@@ -43,9 +38,11 @@ struct RecordingObj: Decodable {
         let foundLabels = findMatchFor(entity: .label) as! [Label]
         
         var recording: Recording!
+        var newRecording = false
         
         if foundRecordings.count < 1 {
             recording = (createNewFor(entity: .recording)[0] as! Recording)
+            newRecording = true
         } else {
             let formatter = DateFormatter()
             formatter.dateFormat = "yyyy-MM-dd"
@@ -62,6 +59,25 @@ struct RecordingObj: Decodable {
 
         do {
             try AppDelegate.viewContext.save()
+            if newRecording {
+                
+                var notifType: LocalNotif.NewReleaseType?
+                if UserDefaults.standard.bool(forKey: Util.Keys.newRecordingFromArtistNotifKey)
+                    && Util.getFollowedArtists().contains(artist_id) {
+                    notifType = .followedArtist
+                } else if UserDefaults.standard.bool(forKey: Util.Keys.newRecordingFromGenreNotifKey) {
+                    notifType = .favoriteGenre
+                }
+                
+                if let type = notifType {
+                    LocalNotif.createNewReleaseAddedNotif(type: type, recording: recording) { (e) in
+                        if let err = e {
+                            print(err)
+                        }
+                    }
+                }
+                
+            }
         } catch let error as NSError {
             print("ERROR - \(error)\n--\(error.userInfo)")
         }
@@ -95,10 +111,11 @@ struct RecordingObj: Decodable {
                     recording.genres.insert(newGenre)
                 }
             } else {
-                for genre in self.genres {
-                    genres[0].name = genre.genre_name
+                for (index, genre) in self.genres.enumerated() {
+                    // This is overriding == fix
+                    genres[index].name = genre.genre_name
                     recording.genres.insert(genres[0])
-                    genres[0].recordings.insert(recording)
+                    genres[index].recordings.insert(recording)
                 }
             }
         case .label:
@@ -145,7 +162,8 @@ struct RecordingObj: Decodable {
                 request.predicate = NSPredicate(format: "id == %@", genre.genre_id)
                 do {
                     let found = try AppDelegate.viewContext.fetch(request)
-                    foundGenres += found
+                    guard found.count > 0 else { return [] }
+                    foundGenres += [found[0]]
                 } catch {
                     return []
                 }

@@ -15,16 +15,33 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
     
-    var tabBarController = UITabBarController()
+    var tabBarController: UITabBarController!
     
-    var browseNavController = UINavigationController()
+    var browseNavController: UINavigationController!
     var browseViewController = BrowseViewController()
     
-    var followingNavController = UINavigationController()
+    var followingNavController: UINavigationController!
     var followingViewController = FollowingViewController()
     
     static var recordings: [Recording] = []
-
+    static var avant_garde_subgenres: [String] = []
+    static var blues_subgenres: [String] = []
+    static var caribbean_subgenres: [String] = []
+    static var childrens_subgenres: [String] = []
+    static var classical_subgenres: [String] = []
+    static var comedy_subgenres: [String] = []
+    static var country_subgenres: [String] = []
+    static var electronic_subgenres: [String] = []
+    static var experimental_subgenres: [String] = []
+    static var folk_subgenres: [String] = []
+    static var hip_hop_subgenres: [String] = []
+    static var jazz_subgenres: [String] = []
+    static var latin_subgenres: [String] = []
+    static var pop_subgenres: [String] = []
+    static var rnb_and_soul_subgenres: [String] = []
+    static var rock_subgenres: [String] = []
+    static var worship_subgenres: [String] = []
+    
     static var persistentContainer: NSPersistentContainer {
         return (UIApplication.shared.delegate as! AppDelegate).persistentContainer
     }
@@ -34,28 +51,66 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
-        tabBarController.delegate = self
+        if !UserDefaults.standard.bool(forKey: Util.Keys.launchedBeforeKey) {
+            UserDefaults.standard.set(true, forKey: Util.Keys.launchedBeforeKey)
+            UserDefaults.standard.set(true, forKey: Util.Keys.followRecordingsNotifKey)
+            UserDefaults.standard.set(true, forKey: Util.Keys.newRecordingFromArtistNotifKey)
+            UserDefaults.standard.set(true, forKey: Util.Keys.newRecordingFromGenreNotifKey)
+            UserDefaults.standard.set(false, forKey: Util.Genres.avant_garde)
+            UserDefaults.standard.set(false, forKey: Util.Genres.blues)
+            UserDefaults.standard.set(false, forKey: Util.Genres.caribbean)
+            UserDefaults.standard.set(false, forKey: Util.Genres.childrens)
+            UserDefaults.standard.set(false, forKey: Util.Genres.classical)
+            UserDefaults.standard.set(false, forKey: Util.Genres.comedy)
+            UserDefaults.standard.set(false, forKey: Util.Genres.country)
+            UserDefaults.standard.set(false, forKey: Util.Genres.electronic)
+            UserDefaults.standard.set(false, forKey: Util.Genres.experimental)
+            UserDefaults.standard.set(false, forKey: Util.Genres.folk)
+            UserDefaults.standard.set(false, forKey: Util.Genres.hip_hop)
+            UserDefaults.standard.set(false, forKey: Util.Genres.jazz)
+            UserDefaults.standard.set(false, forKey: Util.Genres.latin)
+            UserDefaults.standard.set(false, forKey: Util.Genres.pop)
+            UserDefaults.standard.set(false, forKey: Util.Genres.rnb_and_soul)
+            UserDefaults.standard.set(false, forKey: Util.Genres.rock)
+            UserDefaults.standard.set(false, forKey: Util.Genres.worship)
+        }
         
+        // Remove navbar bottom border
+        UINavigationBar.appearance().shadowImage = UIImage()
+        UINavigationBar.appearance().setBackgroundImage(UIImage(), for: .default)
+        
+        browseNavController = UINavigationController(rootViewController: browseViewController)
         browseViewController.title = "LaLoop"
         browseNavController.title = "Browse"
         browseNavController.navigationBar.barStyle = .blackOpaque
+        browseNavController.navigationBar.isTranslucent = false
+        browseNavController.navigationBar.barTintColor = Util.Color.backgroundColor
         createTabBarItem(tabBarItem: browseNavController.tabBarItem, image: #imageLiteral(resourceName: "Browse"), selectedImage: #imageLiteral(resourceName: "BrowseSelected"))
         browseNavController.viewControllers = [browseViewController]
         browseNavController.restorationIdentifier = "browseNavController"
         
+        followingNavController = UINavigationController(rootViewController: followingViewController)
         followingViewController.title = "LaLoop"
         followingNavController.title = "Following"
         followingNavController.navigationBar.barStyle = .blackOpaque
+        followingNavController.navigationBar.isTranslucent = false
+        followingNavController.navigationBar.barTintColor = Util.Color.backgroundColor
         createTabBarItem(tabBarItem: followingNavController.tabBarItem, image: #imageLiteral(resourceName: "Following"), selectedImage: #imageLiteral(resourceName: "FollowingSelected"))
         followingNavController.viewControllers = [followingViewController]
         followingViewController.restorationIdentifier = "followingNavController"
-        
+
+        tabBarController = UITabBarController()
+        tabBarController.delegate = self
         tabBarController.tabBar.barStyle = .blackOpaque
-        tabBarController.tabBar.tintColor = .white
+        tabBarController.tabBar.isTranslucent = false
+        tabBarController.tabBar.barTintColor = Util.Color.backgroundColor
         tabBarController.viewControllers = [browseNavController, followingNavController]
         
+        let loadingViewController = LoadingViewController()
+        loadingViewController.presentViewController = tabBarController
+        
         window = UIWindow(frame: UIScreen.main.bounds)
-        window?.rootViewController = tabBarController
+        window?.rootViewController = loadingViewController
         window?.makeKeyAndVisible()
         
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge]) { (didAllow, error) in
@@ -70,6 +125,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         
         return true
+    }
+    
+    func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        Util.getData { (success) in
+            success ? completionHandler(.newData) : completionHandler(.failed)
+        }
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
@@ -87,7 +148,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
+        browseViewController.populateRecordings()
         browseViewController.reloadTableView()
+        followingViewController.populateArtists()
         followingViewController.reloadTableView()
     }
 
