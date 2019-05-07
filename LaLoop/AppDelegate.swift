@@ -23,6 +23,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var followingNavController: UINavigationController!
     var followingViewController = FollowingViewController()
     
+    var settingsNavController: UINavigationController!
+    var settingsViewController = SettingsViewController()
+    
     static var recordings: [Recording] = []
     static var avant_garde_subgenres: [String] = []
     static var blues_subgenres: [String] = []
@@ -80,31 +83,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UINavigationBar.appearance().setBackgroundImage(UIImage(), for: .default)
         
         browseNavController = UINavigationController(rootViewController: browseViewController)
-        browseViewController.title = "LaLoop"
-        browseNavController.title = "Browse"
-        browseNavController.navigationBar.barStyle = .blackOpaque
-        browseNavController.navigationBar.isTranslucent = false
-        browseNavController.navigationBar.barTintColor = Util.Color.backgroundColor
-        createTabBarItem(tabBarItem: browseNavController.tabBarItem, image: #imageLiteral(resourceName: "Browse"), selectedImage: #imageLiteral(resourceName: "BrowseSelected"))
         browseNavController.viewControllers = [browseViewController]
-        browseNavController.restorationIdentifier = "browseNavController"
+        setupNavController(for: browseNavController, title: "Browse", restorationIdentifier: "browseNavController", tabImage: #imageLiteral(resourceName: "Browse"), tabSelectedImage: #imageLiteral(resourceName: "BrowseSelected"))
         
         followingNavController = UINavigationController(rootViewController: followingViewController)
-        followingViewController.title = "LaLoop"
-        followingNavController.title = "Following"
-        followingNavController.navigationBar.barStyle = .blackOpaque
-        followingNavController.navigationBar.isTranslucent = false
-        followingNavController.navigationBar.barTintColor = Util.Color.backgroundColor
-        createTabBarItem(tabBarItem: followingNavController.tabBarItem, image: #imageLiteral(resourceName: "Following"), selectedImage: #imageLiteral(resourceName: "FollowingSelected"))
         followingNavController.viewControllers = [followingViewController]
-        followingViewController.restorationIdentifier = "followingNavController"
-
+        setupNavController(for: followingNavController, title: "Following", restorationIdentifier: "followingNavController", tabImage: #imageLiteral(resourceName: "Following"), tabSelectedImage: #imageLiteral(resourceName: "FollowingSelected"))
+        
+        settingsNavController = UINavigationController(rootViewController: settingsViewController)
+        settingsNavController.viewControllers = [settingsViewController]
+        setupNavController(for: settingsNavController, title: "Settings", restorationIdentifier: "settingsNavController", tabImage: #imageLiteral(resourceName: "Settings"), tabSelectedImage: #imageLiteral(resourceName: "SettingsSelected"))
+        
         tabBarController = UITabBarController()
         tabBarController.delegate = self
         tabBarController.tabBar.barStyle = .blackOpaque
         tabBarController.tabBar.isTranslucent = false
         tabBarController.tabBar.barTintColor = Util.Color.backgroundColor
-        tabBarController.viewControllers = [browseNavController, followingNavController]
+        tabBarController.viewControllers = [browseNavController, followingNavController, settingsNavController]
         
         let loadingViewController = LoadingViewController()
         loadingViewController.presentViewController = tabBarController
@@ -212,6 +207,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         tabBarItem.selectedImage = selectedImage.withRenderingMode(.alwaysOriginal)
         tabBarItem.setTitleTextAttributes([.foregroundColor: Util.Color.main], for: .selected)
         tabBarItem.setTitleTextAttributes([.foregroundColor: UIColor.white], for: .normal)
+    }
+    
+    func setupNavController(for nc: UINavigationController, title: String, restorationIdentifier: String, tabImage: UIImage, tabSelectedImage: UIImage) {
+        nc.title = title
+        nc.topViewController?.title = title
+        nc.navigationBar.barStyle = .blackOpaque
+        nc.navigationBar.isTranslucent = false
+        nc.navigationBar.barTintColor = Util.Color.backgroundColor
+        nc.restorationIdentifier = restorationIdentifier
+        createTabBarItem(tabBarItem: nc.tabBarItem, image: tabImage, selectedImage: tabSelectedImage)
     }
 
 }

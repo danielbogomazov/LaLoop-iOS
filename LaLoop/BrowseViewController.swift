@@ -31,8 +31,6 @@ class BrowseViewController: UIViewController {
         
         view.backgroundColor = Util.Color.backgroundColor
         
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: #imageLiteral(resourceName: "Settings").withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(settingsButtonPressed))
-        
         setupConectionView()
         setupTableView()
 
@@ -120,13 +118,7 @@ class BrowseViewController: UIViewController {
             }
         }
     }
-    
-    @objc private func settingsButtonPressed() {
-        let settingsNavController = UINavigationController(rootViewController: SettingsViewController())
-        settingsNavController.modalPresentationStyle = .formSheet
-        present(settingsNavController, animated: true)
-    }
-        
+            
     func setupTableView() {
         recordingsTableView = UITableView(frame: .zero, style: .plain)
         recordingsTableView.translatesAutoresizingMaskIntoConstraints = false

@@ -48,9 +48,6 @@ class SettingsViewController: UIViewController {
         navigationController?.navigationBar.isTranslucent = false
         navigationController?.navigationBar.barTintColor = Util.Color.secondaryDark
         
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneButtonPressed))
-        navigationItem.leftBarButtonItem?.tintColor = UIColor.white
-
         view.backgroundColor = Util.Color.backgroundColor
 
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -65,11 +62,6 @@ class SettingsViewController: UIViewController {
         tableView.backgroundColor = Util.Color.backgroundColor
 
     }
-    
-    @objc func doneButtonPressed() {
-        dismiss(animated: true)
-    }
-
 }
 
 extension SettingsViewController: UITableViewDelegate, UITableViewDataSource {
