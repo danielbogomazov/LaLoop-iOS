@@ -35,6 +35,7 @@ class FollowingViewController: UIViewController {
         reloadTableView()
         scrollTableViewToTop(animated: false)
         artistsTableView.headerViewHeightConstraint.constant = artistsTableView.maxHeaderHeight
+        artistsTableView.updateHeader()
     }
     
     override func didReceiveMemoryWarning() {

@@ -10,7 +10,7 @@ import UIKit
 
 class SettingsViewController: UIViewController {
 
-    var tableView: HeaderTableView!
+    var settingsTableView: HeaderTableView!
     
     var notifsSection: [Section] = [Section(title: Util.Strings.followedRecordings),
                                     Section(title: Util.Strings.newRecordingsFromFavoriteGenres),
@@ -50,17 +50,22 @@ class SettingsViewController: UIViewController {
         
         view.backgroundColor = Util.Color.backgroundColor
 
-        tableView = HeaderTableView(frame: .zero, style: .grouped, title: "Settings")
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(tableView)
-        view.addConstraints([NSLayoutConstraint(item: tableView!, attribute: .top, relatedBy: .equal, toItem: view, attribute: .top, multiplier: 1.0, constant: 0),
-                             NSLayoutConstraint(item: tableView!, attribute: .left, relatedBy: .equal, toItem: view, attribute: .left, multiplier: 1.0, constant: 0),
-                             NSLayoutConstraint(item: tableView!, attribute: .right, relatedBy: .equal, toItem: view, attribute: .right, multiplier: 1.0, constant: 0),
-                             NSLayoutConstraint(item: tableView!, attribute: .bottom, relatedBy: .equal, toItem: view, attribute: .bottom, multiplier: 1.0, constant: 0)])
+        settingsTableView = HeaderTableView(frame: .zero, style: .grouped, title: "Settings")
+        settingsTableView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(settingsTableView)
+        view.addConstraints([NSLayoutConstraint(item: settingsTableView!, attribute: .top, relatedBy: .equal, toItem: view, attribute: .top, multiplier: 1.0, constant: 0),
+                             NSLayoutConstraint(item: settingsTableView!, attribute: .left, relatedBy: .equal, toItem: view, attribute: .left, multiplier: 1.0, constant: 0),
+                             NSLayoutConstraint(item: settingsTableView!, attribute: .right, relatedBy: .equal, toItem: view, attribute: .right, multiplier: 1.0, constant: 0),
+                             NSLayoutConstraint(item: settingsTableView!, attribute: .bottom, relatedBy: .equal, toItem: view, attribute: .bottom, multiplier: 1.0, constant: 0)])
         
-        tableView.delegate = self
-        tableView.navigationController = navigationController
+        settingsTableView.delegate = self
+        settingsTableView.navigationController = navigationController
 
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        settingsTableView.headerViewHeightConstraint.constant = settingsTableView.maxHeaderHeight
+        settingsTableView.updateHeader()
     }
 }
 
