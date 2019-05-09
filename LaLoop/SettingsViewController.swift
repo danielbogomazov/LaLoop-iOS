@@ -10,7 +10,7 @@ import UIKit
 
 class SettingsViewController: UIViewController {
 
-    let tableView = UITableView(frame: .zero, style: .grouped)
+    var tableView: HeaderTableView!
     
     var notifsSection: [Section] = [Section(title: Util.Strings.followedRecordings),
                                     Section(title: Util.Strings.newRecordingsFromFavoriteGenres),
@@ -50,21 +50,21 @@ class SettingsViewController: UIViewController {
         
         view.backgroundColor = Util.Color.backgroundColor
 
+        tableView = HeaderTableView(frame: .zero, style: .grouped, title: "Settings")
         tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
-        view.addConstraints([NSLayoutConstraint(item: tableView, attribute: .top, relatedBy: .equal, toItem: view, attribute: .top, multiplier: 1.0, constant: 0),
-                             NSLayoutConstraint(item: tableView, attribute: .left, relatedBy: .equal, toItem: view, attribute: .left, multiplier: 1.0, constant: 0),
-                             NSLayoutConstraint(item: tableView, attribute: .right, relatedBy: .equal, toItem: view, attribute: .right, multiplier: 1.0, constant: 0),
-                             NSLayoutConstraint(item: tableView, attribute: .bottom, relatedBy: .equal, toItem: view, attribute: .bottom, multiplier: 1.0, constant: 0)])
+        view.addConstraints([NSLayoutConstraint(item: tableView!, attribute: .top, relatedBy: .equal, toItem: view, attribute: .top, multiplier: 1.0, constant: 0),
+                             NSLayoutConstraint(item: tableView!, attribute: .left, relatedBy: .equal, toItem: view, attribute: .left, multiplier: 1.0, constant: 0),
+                             NSLayoutConstraint(item: tableView!, attribute: .right, relatedBy: .equal, toItem: view, attribute: .right, multiplier: 1.0, constant: 0),
+                             NSLayoutConstraint(item: tableView!, attribute: .bottom, relatedBy: .equal, toItem: view, attribute: .bottom, multiplier: 1.0, constant: 0)])
         
         tableView.delegate = self
-        tableView.dataSource = self
-        tableView.backgroundColor = Util.Color.backgroundColor
+        tableView.navigationController = navigationController
 
     }
 }
 
-extension SettingsViewController: UITableViewDelegate, UITableViewDataSource {
+extension SettingsViewController: HeaderViewDelegate {
     
     func numberOfSections(in tableView: UITableView) -> Int {
         return 2

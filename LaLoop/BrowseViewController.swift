@@ -11,9 +11,8 @@ import CoreData
 
 class BrowseViewController: UIViewController {
     
-    private lazy var recordingsTableView = UITableView()
+    private var recordingsTableView: HeaderTableView!
     private lazy var searchBar = UISearchBar()
-    private lazy var refreshControl = UIRefreshControl()
     private lazy var loadingView = UIView()
     private lazy var connectionView = UIView()
     private lazy var tryAgainButton = UIButton()
@@ -33,12 +32,16 @@ class BrowseViewController: UIViewController {
         
         setupConectionView()
         setupTableView()
+        recordingsTableView.delegate = self
+        recordingsTableView.navigationController = navigationController
 
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard)))
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        recordingsTableView.headerViewHeightConstraint.constant = recordingsTableView.maxHeaderHeight
+        recordingsTableView.updateHeader()
         reloadTableView()
     }
     
@@ -48,9 +51,8 @@ class BrowseViewController: UIViewController {
     }
 
     func scrollTableViewToTop(animated: Bool = true) {
-        let indexPath = IndexPath(row: 0, section: 0)
-        if recordingsTableView.cellForRow(at: indexPath) != nil {
-            recordingsTableView.scrollToRow(at: indexPath, at: .top, animated: animated)
+        if recordingsTableView.tableView.numberOfSections > 0 {
+            recordingsTableView.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: animated)
         }
     }
     
@@ -120,27 +122,14 @@ class BrowseViewController: UIViewController {
     }
             
     func setupTableView() {
-        recordingsTableView = UITableView(frame: .zero, style: .plain)
+        recordingsTableView = HeaderTableView(frame: .zero, style: .plain, title: "Browse")
         recordingsTableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(recordingsTableView)
-        view.addConstraints([NSLayoutConstraint(item: recordingsTableView, attribute: .top, relatedBy: .equal, toItem: view, attribute: .top, multiplier: 1.0, constant: 0),
-                             NSLayoutConstraint(item: recordingsTableView, attribute: .left, relatedBy: .equal, toItem: view, attribute: .left, multiplier: 1.0, constant: 0),
-                             NSLayoutConstraint(item: recordingsTableView, attribute: .right, relatedBy: .equal, toItem: view, attribute: .right, multiplier: 1.0, constant: 0),
-                             NSLayoutConstraint(item: recordingsTableView, attribute: .bottom, relatedBy: .equal, toItem: view, attribute: .bottom, multiplier: 1.0, constant: 0)])
-        recordingsTableView.backgroundColor = Util.Color.backgroundColor
-        recordingsTableView.delegate = self
-        recordingsTableView.dataSource = self
-        refreshControl.addTarget(self, action: #selector(ref(_:)), for: .valueChanged)
-        recordingsTableView.refreshControl = refreshControl
-    }
-    
-    @objc func ref(_ sender: UIRefreshControl) {
-        Util.getData() { (success) in
-            DispatchQueue.main.async {
-                self.setup(connected: success)
-                self.refreshControl.endRefreshing()
-            }
-        }
+        view.addConstraints([NSLayoutConstraint(item: recordingsTableView!, attribute: .top, relatedBy: .equal, toItem: view, attribute: .top, multiplier: 1.0, constant: 0),
+                             NSLayoutConstraint(item: recordingsTableView!, attribute: .left, relatedBy: .equal, toItem: view, attribute: .left, multiplier: 1.0, constant: 0),
+                             NSLayoutConstraint(item: recordingsTableView!, attribute: .right, relatedBy: .equal, toItem: view, attribute: .right, multiplier: 1.0, constant: 0),
+                             NSLayoutConstraint(item: recordingsTableView!, attribute: .bottom, relatedBy: .equal, toItem: view, attribute: .bottom, multiplier: 1.0, constant: 0)])
+        recordingsTableView.canRefresh = true
     }
     
     @objc func dismissKeyboard() {
@@ -207,12 +196,21 @@ class BrowseViewController: UIViewController {
 
     /// Needed to reload the table view from AppDelegate
     func reloadTableView() {
-        self.recordingsTableView.reloadData()
+        recordingsTableView.tableView.reloadData()
+        scrollTableViewToTop(animated: false)
     }
 }
 
-// MARK: - UITableViewDelegate, UITableViewDataSource
-extension BrowseViewController: UITableViewDelegate, UITableViewDataSource {
+extension BrowseViewController: HeaderViewDelegate {
+    
+    func refresh(completionHandler: @escaping () -> Void) {
+        Util.getData() { (success) in
+            DispatchQueue.main.async {
+                self.setup(connected: success)
+                completionHandler()
+            }
+        }
+    }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 100
@@ -221,11 +219,7 @@ extension BrowseViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return filteredRecordings.count == 0 ? AppDelegate.recordings.count : filteredRecordings.count
     }
-    
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return "upcoming recordings"
-    }
-    
+        
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 48
     }
@@ -287,6 +281,8 @@ extension BrowseViewController: UITableViewDelegate, UITableViewDataSource {
             return [follow]
         }
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {}
 }
 
 extension BrowseViewController: UISearchBarDelegate {

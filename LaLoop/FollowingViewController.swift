@@ -11,7 +11,7 @@ import CoreData
 
 class FollowingViewController: UIViewController {
 
-    lazy private var artistsTableView = UITableView()
+    private var artistsTableView: HeaderTableView!
     lazy private var noneFollowingLabel = UILabel()
     private var artists: [ArtistStruct] = []
 
@@ -34,6 +34,7 @@ class FollowingViewController: UIViewController {
         populateArtists()
         reloadTableView()
         scrollTableViewToTop(animated: false)
+        artistsTableView.headerViewHeightConstraint.constant = artistsTableView.maxHeaderHeight
     }
     
     override func didReceiveMemoryWarning() {
@@ -42,23 +43,21 @@ class FollowingViewController: UIViewController {
     }
     
     func setupTableView() {
-        
-        artistsTableView = UITableView(frame: .zero, style: .grouped)
+        artistsTableView = HeaderTableView(frame: .zero, style: .plain, title: "Following")
         artistsTableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(artistsTableView)
 
-        view.addConstraints([NSLayoutConstraint(item: artistsTableView, attribute: .top, relatedBy: .equal, toItem: view, attribute: .top, multiplier: 1.0, constant: 0),
-                             NSLayoutConstraint(item: artistsTableView, attribute: .left, relatedBy: .equal, toItem: view, attribute: .left, multiplier: 1.0, constant: 0),
-                             NSLayoutConstraint(item: artistsTableView, attribute: .right, relatedBy: .equal, toItem: view, attribute: .right, multiplier: 1.0, constant: 0),
-                             NSLayoutConstraint(item: artistsTableView, attribute: .bottom, relatedBy: .equal, toItem: view, attribute: .bottom, multiplier: 1.0, constant: 0)])
-        artistsTableView.backgroundColor = Util.Color.backgroundColor
+        view.addConstraints([NSLayoutConstraint(item: artistsTableView!, attribute: .top, relatedBy: .equal, toItem: view, attribute: .top, multiplier: 1.0, constant: 0),
+                             NSLayoutConstraint(item: artistsTableView!, attribute: .left, relatedBy: .equal, toItem: view, attribute: .left, multiplier: 1.0, constant: 0),
+                             NSLayoutConstraint(item: artistsTableView!, attribute: .right, relatedBy: .equal, toItem: view, attribute: .right, multiplier: 1.0, constant: 0),
+                             NSLayoutConstraint(item: artistsTableView!, attribute: .bottom, relatedBy: .equal, toItem: view, attribute: .bottom, multiplier: 1.0, constant: 0)])
         artistsTableView.delegate = self
-        artistsTableView.dataSource = self
+        artistsTableView.navigationController = navigationController
     }
     
     /// Needed to reload the table view from AppDelegate
     func reloadTableView() {
-        self.artistsTableView.reloadData()
+        self.artistsTableView.tableView.reloadData()
     }
     
     func populateArtists() {
@@ -95,6 +94,7 @@ class FollowingViewController: UIViewController {
         }
         artists.sort { $0.obj.name < $1.obj.name }
         noneFollowingLabel.isHidden = artists.count > 0
+        artistsTableView.isHidden = artists.count < 1
     }
     
     func unfollowPromptForArtist(_ artist: ArtistStruct, indexPath: IndexPath) {
@@ -107,7 +107,8 @@ class FollowingViewController: UIViewController {
                 }
                 self.artists = self.artists.filter { $0.obj != artist.obj }
                 self.noneFollowingLabel.isHidden = self.artists.count > 0
-                self.artistsTableView.deleteSections(IndexSet(integer: indexPath.section), with: .fade)
+                self.artistsTableView.isHidden = self.artists.count < 1
+                self.artistsTableView.tableView.deleteSections(IndexSet(integer: indexPath.section), with: .fade)
             }
         }))
         self.present(alert, animated: true, completion: nil)
@@ -118,15 +119,15 @@ class FollowingViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         alert.addAction(UIAlertAction(title: "Unfollow", style: .destructive, handler: { _ in
             DispatchQueue.main.async {
-                Util.unfollowRecording(id: (self.artistsTableView.cellForRow(at: indexPath) as! RecordingCell).recordingViewModel.recordingID)
+                Util.unfollowRecording(id: (self.artistsTableView.tableView.cellForRow(at: indexPath) as! RecordingCell).recordingViewModel.recordingID)
                 self.artists[indexPath.section].followedRecordings.remove(at: indexPath.row - 1)
                 let obj = self.artists[indexPath.section]
                 if obj.followedRecordings.count == 0 {
                     self.artists = self.artists.filter { $0.obj != obj.obj }
-                    self.artistsTableView.deleteSections(IndexSet(integer: indexPath.section), with: .fade)
+                    self.artistsTableView.tableView.deleteSections(IndexSet(integer: indexPath.section), with: .fade)
                 } else {
-                    self.artistsTableView.deleteRows(at: [indexPath], with: .fade)
-                    (self.artistsTableView.cellForRow(at: IndexPath(row: 0, section: indexPath.section)) as! ArtistCell).artistViewModel.update()
+                    self.artistsTableView.tableView.deleteRows(at: [indexPath], with: .fade)
+                    (self.artistsTableView.tableView.cellForRow(at: IndexPath(row: 0, section: indexPath.section)) as! ArtistCell).artistViewModel.update()
                 }
                 self.noneFollowingLabel.isHidden = self.artists.count > 0
             }
@@ -147,15 +148,13 @@ class FollowingViewController: UIViewController {
     }
     
     func scrollTableViewToTop(animated: Bool = true) {
-        let indexPath = IndexPath(row: 0, section: 0)
-        if artistsTableView.cellForRow(at: indexPath) != nil {
-            artistsTableView.scrollToRow(at: indexPath, at: .top, animated: animated)
+        if artistsTableView.tableView.numberOfSections > 0 {
+            artistsTableView.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: animated)
         }
     }
 }
 
-// MARK: - UITableViewDelegate, UITableViewDataSource
-extension FollowingViewController: UITableViewDelegate, UITableViewDataSource {
+extension FollowingViewController: HeaderViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if indexPath.row == 0 {
