@@ -51,7 +51,6 @@ class RecordingCell: UITableViewCell {
     
     init() {
         super.init(style: .default, reuseIdentifier: "recordingCell")
-        
         selectionStyle = .none
         createAndUpdateConstraints()
     }
@@ -60,10 +59,10 @@ class RecordingCell: UITableViewCell {
         if includeFollowingButton {
             contentView.addSubview(followingButton)
             followingButton.translatesAutoresizingMaskIntoConstraints = false
-            contentView.addConstraints([NSLayoutConstraint(item: followingButton, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .width, multiplier: 1.0, constant: 24),
-                                        NSLayoutConstraint(item: followingButton, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1.0, constant: 24),
-                                        NSLayoutConstraint(item: followingButton, attribute: .centerY, relatedBy: .equal, toItem: contentView, attribute: .centerY, multiplier: 1.0, constant: 0),
-                                        NSLayoutConstraint(item: followingButton, attribute: .right, relatedBy: .equal, toItem: contentView, attribute: .right, multiplier: 1.0, constant: -32)])
+            contentView.addConstraints([NSLayoutConstraint(item: followingButton, attribute: .top, relatedBy: .equal, toItem: contentView, attribute: .top, multiplier: 1.0, constant: 0),
+                                        NSLayoutConstraint(item: followingButton, attribute: .right, relatedBy: .equal, toItem: contentView, attribute: .right, multiplier: 1.0, constant: 0),
+                                        NSLayoutConstraint(item: followingButton, attribute: .bottom, relatedBy: .equal, toItem: contentView, attribute: .bottom, multiplier: 1.0, constant: 0),
+                                        NSLayoutConstraint(item: followingButton, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .width, multiplier: 1.0, constant: 72)])
             followingButton.addTarget(self, action: #selector(followingButtonPressed(_:)), for: .touchUpInside)
         }
         
