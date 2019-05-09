@@ -4,7 +4,10 @@ iOS application used to display upcoming music using the [apollo webscraper](htt
 ## Version
 Pre-alpha. Working on this application simultaneously to [apollo](https://github.com/danielbogomazov/apollo). A large change in one may affect the other greatly.
 
-## Contribution Note
+## Support
+If you're having any difficulties with the application, feel free to contact me at danielbogomazov@gmail.com _or_ by [creating a new issue](https://github.com/danielbogomazov/LaLoop-iOS/issues). LaLoop is developed and maintained by one person - replies may not be immediate.
+
+## Development Contribution Note
 - If the JSON from the apollo webscraper contains the month and year but not the day for the release date of the recording, we set the day to 01. To create a distinction between these dates and release dates _actually_ released on the first of the month, we use the following standard:
 
   - **IMPORTANT** : The standard we use for this situation is to set the date in the db as ([1999 + YYYY]-MM-01)
