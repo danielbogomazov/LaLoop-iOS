@@ -55,27 +55,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
         if !UserDefaults.standard.bool(forKey: Util.Keys.launchedBeforeKey) {
-            UserDefaults.standard.set(true, forKey: Util.Keys.launchedBeforeKey)
-            UserDefaults.standard.set(true, forKey: Util.Keys.followRecordingsNotifKey)
-            UserDefaults.standard.set(true, forKey: Util.Keys.newRecordingFromArtistNotifKey)
-            UserDefaults.standard.set(true, forKey: Util.Keys.newRecordingFromGenreNotifKey)
-            UserDefaults.standard.set(false, forKey: Util.Genres.avant_garde)
-            UserDefaults.standard.set(false, forKey: Util.Genres.blues)
-            UserDefaults.standard.set(false, forKey: Util.Genres.caribbean)
-            UserDefaults.standard.set(false, forKey: Util.Genres.childrens)
-            UserDefaults.standard.set(false, forKey: Util.Genres.classical)
-            UserDefaults.standard.set(false, forKey: Util.Genres.comedy)
-            UserDefaults.standard.set(false, forKey: Util.Genres.country)
-            UserDefaults.standard.set(false, forKey: Util.Genres.electronic)
-            UserDefaults.standard.set(false, forKey: Util.Genres.experimental)
-            UserDefaults.standard.set(false, forKey: Util.Genres.folk)
-            UserDefaults.standard.set(false, forKey: Util.Genres.hip_hop)
-            UserDefaults.standard.set(false, forKey: Util.Genres.jazz)
-            UserDefaults.standard.set(false, forKey: Util.Genres.latin)
-            UserDefaults.standard.set(false, forKey: Util.Genres.pop)
-            UserDefaults.standard.set(false, forKey: Util.Genres.rnb_and_soul)
-            UserDefaults.standard.set(false, forKey: Util.Genres.rock)
-            UserDefaults.standard.set(false, forKey: Util.Genres.worship)
+            Util.resetSettings()
         }
         
         // Remove navbar bottom border
@@ -231,6 +211,8 @@ extension AppDelegate: UITabBarControllerDelegate {
                 browseViewController.scrollTableViewToTop()
             } else if let followViewController = (viewController as? UINavigationController)?.topViewController as? FollowingViewController {
                 followViewController.scrollTableViewToTop()
+            } else if let settingsViewController = (viewController as? UINavigationController)?.topViewController as? SettingsViewController {
+                settingsViewController.scrollTableViewToTop()
             }
         }
         return true

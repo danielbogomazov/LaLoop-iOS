@@ -34,6 +34,8 @@ class SettingsViewController: UIViewController {
                                     Section(title: Util.Genres.rock),
                                     Section(title: Util.Genres.worship)]
     
+    var clearDataButton = UIButton()
+    
     enum NotifType {
         case followedRecording
         case newRecordingByArtist
@@ -66,13 +68,24 @@ class SettingsViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         settingsTableView.headerViewHeightConstraint.constant = settingsTableView.maxHeaderHeight
         settingsTableView.updateHeader()
+        scrollTableViewToTop(animated: false)
     }
+    
+    func scrollTableViewToTop(animated: Bool = true) {
+
+        if settingsTableView.tableView.numberOfSections > 0 &&
+            settingsTableView.tableView.numberOfRows(inSection: 0) > 0 {
+            
+            settingsTableView.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: animated)
+        }
+    }
+
 }
 
 extension SettingsViewController: HeaderViewDelegate {
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        return 3
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -84,29 +97,38 @@ extension SettingsViewController: HeaderViewDelegate {
         headerCell.addSubview(headerLabel)
         headerCell.addConstraints([NSLayoutConstraint(item: headerLabel, attribute: .left, relatedBy: .equal, toItem: headerCell, attribute: .left, multiplier: 1.0, constant: 12),
                                    NSLayoutConstraint(item: headerLabel, attribute: .bottom, relatedBy: .equal, toItem: headerCell, attribute: .bottom, multiplier: 1.0, constant: -8)])
-        headerLabel.text = section == 0 ? "RECEIVE NOTIFICATIONS FOR" : "FAVORITE GENRES"
         headerLabel.setupLabel(fontWeight: .medium, fontSize: 12, textColor: UIColor.white.withAlphaComponent(0.6))
+        
+        switch section {
+        case 0:
+            headerLabel.text = "RECEIVE NOTIFICATIONS FOR"
+        case 1:
+            headerLabel.text = "FAVORITE GENRES"
+        default:
+            headerLabel.text = ""
+        }
         
         return headerCell
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 0 {
+        switch section {
+        case 0:
             return notifsSection.count
-        } else if section == 1 {
+        case 1:
             return genresSection.count
+        case 2:
+            return 1
+        default:
+            return 0
         }
-        return 3
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        switch indexPath.section {
-        case 0:
+        if indexPath.section == 0 {
             return notifsSection[indexPath.row].detail != "" ? 80 : 50
-        case 1:
+        } else {
             return 50
-        default:
-            return 0
         }
     }
     
@@ -142,15 +164,40 @@ extension SettingsViewController: HeaderViewDelegate {
             cell.sectionViewModel = SectionViewModel(section: section)
             cell.switchAction = { sender in
                 UserDefaults.standard.set((sender as! UISwitch).isOn, forKey: section.title)
-                if (sender as! UISwitch).isOn {
-                    print("\(section.title) is on")
-                } else {
-                    print("\(section.title) is off")
-                }
             }
+            return cell
+        case 2:
+            // Clear Data
+            let cell = UITableViewCell()
+            cell.backgroundColor = Util.Color.backgroundColor
+            clearDataButton.translatesAutoresizingMaskIntoConstraints = false
+            cell.addSubview(clearDataButton)
+            cell.addConstraints([NSLayoutConstraint(item: clearDataButton, attribute: .top, relatedBy: .equal, toItem: cell, attribute: .top, multiplier: 1.0, constant: 0),
+                                 NSLayoutConstraint(item: clearDataButton, attribute: .left, relatedBy: .equal, toItem: cell, attribute: .left, multiplier: 1.0, constant: 0),
+                                 NSLayoutConstraint(item: clearDataButton, attribute: .right, relatedBy: .equal, toItem: cell, attribute: .right, multiplier: 1.0, constant: 0),
+                                 NSLayoutConstraint(item: clearDataButton, attribute: .bottom, relatedBy: .equal, toItem: cell, attribute: .bottom, multiplier: 1.0, constant: 0)])
+            clearDataButton.setTitle("Clear Data", for: .normal)
+            clearDataButton.setTitleColor(.white, for: .normal)
+            clearDataButton.titleLabel?.setupLabel(fontWeight: .bold, fontSize: clearDataButton.titleLabel?.font.pointSize ?? 18)
+            clearDataButton.backgroundColor = UIColor.red.withAlphaComponent(0.8)
+            clearDataButton.addTarget(self, action: #selector(clearDataButtonPressed(_:)), for: .touchUpInside)
             return cell
         default:
             return UITableViewCell()
         }
+    }
+    
+    @objc func clearDataButtonPressed(_ sender: UIButton) {
+        
+        let alert = UIAlertController(title: "Are you sure?", message: "Clearing the data will remove all followed albums and artists.\nAll upcoming notifications and preferences will also be removed.", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "Clear Data", style: .destructive, handler: { _ in
+            UserDefaults.standard.set([], forKey: Util.Keys.followedRecordingsKey)
+            UserDefaults.standard.set([], forKey: Util.Keys.followedArtistsKey)
+            LocalNotif.removeAllNotifications()
+            Util.resetSettings()
+            self.settingsTableView.tableView.reloadData()
+        }))
+        present(alert, animated: true, completion: nil)
     }
 }

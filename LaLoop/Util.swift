@@ -279,4 +279,29 @@ public class Util {
     static func allSubgenres() -> [String] {
         return AppDelegate.avant_garde_subgenres + AppDelegate.blues_subgenres + AppDelegate.caribbean_subgenres + AppDelegate.childrens_subgenres + AppDelegate.classical_subgenres + AppDelegate.comedy_subgenres + AppDelegate.country_subgenres + AppDelegate.electronic_subgenres + AppDelegate.experimental_subgenres + AppDelegate.folk_subgenres + AppDelegate.hip_hop_subgenres + AppDelegate.jazz_subgenres + AppDelegate.latin_subgenres + AppDelegate.pop_subgenres + AppDelegate.rnb_and_soul_subgenres + AppDelegate.rock_subgenres + AppDelegate.worship_subgenres
     }
+    
+    static func resetSettings() {
+        UserDefaults.standard.set(true, forKey: Util.Keys.launchedBeforeKey)
+        UserDefaults.standard.set(true, forKey: Util.Keys.followRecordingsNotifKey)
+        UserDefaults.standard.set(true, forKey: Util.Keys.newRecordingFromArtistNotifKey)
+        UserDefaults.standard.set(true, forKey: Util.Keys.newRecordingFromGenreNotifKey)
+        UserDefaults.standard.set(false, forKey: Util.Genres.avant_garde)
+        UserDefaults.standard.set(false, forKey: Util.Genres.blues)
+        UserDefaults.standard.set(false, forKey: Util.Genres.caribbean)
+        UserDefaults.standard.set(false, forKey: Util.Genres.childrens)
+        UserDefaults.standard.set(false, forKey: Util.Genres.classical)
+        UserDefaults.standard.set(false, forKey: Util.Genres.comedy)
+        UserDefaults.standard.set(false, forKey: Util.Genres.country)
+        UserDefaults.standard.set(false, forKey: Util.Genres.electronic)
+        UserDefaults.standard.set(false, forKey: Util.Genres.experimental)
+        UserDefaults.standard.set(false, forKey: Util.Genres.folk)
+        UserDefaults.standard.set(false, forKey: Util.Genres.hip_hop)
+        UserDefaults.standard.set(false, forKey: Util.Genres.jazz)
+        UserDefaults.standard.set(false, forKey: Util.Genres.latin)
+        UserDefaults.standard.set(false, forKey: Util.Genres.pop)
+        UserDefaults.standard.set(false, forKey: Util.Genres.rnb_and_soul)
+        UserDefaults.standard.set(false, forKey: Util.Genres.rock)
+        UserDefaults.standard.set(false, forKey: Util.Genres.worship)
+
+    }
 }

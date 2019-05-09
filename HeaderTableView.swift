@@ -122,7 +122,8 @@ extension HeaderTableView: UITableViewDelegate, UITableViewDataSource {
     }
                             
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        return delegate?.tableView?(tableView, editActionsForRowAt: indexPath)
+        guard let r = delegate?.tableView?(tableView, editActionsForRowAt: indexPath) else { return [] }
+        return r
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

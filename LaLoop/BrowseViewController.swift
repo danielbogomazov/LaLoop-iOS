@@ -51,7 +51,9 @@ class BrowseViewController: UIViewController {
     }
 
     func scrollTableViewToTop(animated: Bool = true) {
-        if recordingsTableView.tableView.numberOfSections > 0 {
+        if recordingsTableView.tableView.numberOfSections > 0 &&
+            recordingsTableView.tableView.numberOfRows(inSection: 0) > 0 {
+            
             recordingsTableView.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: animated)
         }
     }

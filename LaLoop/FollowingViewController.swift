@@ -149,7 +149,9 @@ class FollowingViewController: UIViewController {
     }
     
     func scrollTableViewToTop(animated: Bool = true) {
-        if artistsTableView.tableView.numberOfSections > 0 {
+        if artistsTableView.tableView.numberOfSections > 0 &&
+            artistsTableView.tableView.numberOfRows(inSection: 0) > 0 {
+            
             artistsTableView.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: animated)
         }
     }
