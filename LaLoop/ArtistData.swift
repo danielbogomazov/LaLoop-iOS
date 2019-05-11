@@ -28,6 +28,8 @@ struct ArtistObj: Decodable {
         let foundArtists = findMatchFor(entity: .artist) as! [Artist]
         let foundGenres = findMatchFor(entity: .genre) as! [Genre]
         
+        if foundArtists.count < 1 { return }
+        
         foundArtists[0].genres.removeAll() // Easy way of removing removed genres
         for genre in foundGenres {
             foundArtists[0].genres.insert(genre)
