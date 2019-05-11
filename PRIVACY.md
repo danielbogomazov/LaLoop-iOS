@@ -8,7 +8,7 @@ LaLoop does not collect, sell, or store any personal information. All logged dat
 
 ### Security
 
-All internet communication is done so securely using HTTPS to an internal server. LaLoop does not open communications with any other 3rd party service.
+All internet communication is done so to an internal server. LaLoop does not open communications with any other 3rd party service.
 
 ### Issues or Concerns
 
