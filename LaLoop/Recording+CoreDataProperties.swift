@@ -17,6 +17,7 @@ extension Recording {
         return NSFetchRequest<Recording>(entityName: "Recording")
     }
 
+    @NSManaged public var date_added: Date?
     @NSManaged public var release_date: Date?
     @NSManaged public var artists: Set<Artist>
     @NSManaged public var labels: Set<Label>

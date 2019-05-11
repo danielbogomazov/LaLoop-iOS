@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		651BED5622867ACE009B7B9A /* ArtistData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 651BED5522867ACE009B7B9A /* ArtistData.swift */; };
 		6523EEA321CDDBD200EF0333 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6523EEA221CDDBD200EF0333 /* AppDelegate.swift */; };
 		6523EEAB21CDDBD200EF0333 /* LaLoop.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 6523EEA921CDDBD200EF0333 /* LaLoop.xcdatamodeld */; };
 		6523EEAD21CDDBD500EF0333 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6523EEAC21CDDBD500EF0333 /* Assets.xcassets */; };
@@ -34,6 +35,7 @@
 		65C3A2B0227E0C4100307275 /* Genre+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C3A2AE227E0C4100307275 /* Genre+CoreDataClass.swift */; };
 		65C3A2B1227E0C4100307275 /* Genre+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C3A2AF227E0C4100307275 /* Genre+CoreDataProperties.swift */; };
 		65C3A2B322838C9500307275 /* HeaderTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C3A2B222838C9500307275 /* HeaderTableView.swift */; };
+		65C3A2B72285274E00307275 /* FilterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C3A2B62285274E00307275 /* FilterViewController.swift */; };
 		65C48AFD223B0B6900231B32 /* FollowingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C48AFC223B0B6900231B32 /* FollowingViewController.swift */; };
 		65C48B01223BE70C00231B32 /* UILabelExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C48B00223BE70C00231B32 /* UILabelExtension.swift */; };
 		65EC7B9A2274EF090077BBBD /* ArtistViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65EC7B992274EF090077BBBD /* ArtistViewModel.swift */; };
@@ -42,6 +44,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		651BED5522867ACE009B7B9A /* ArtistData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistData.swift; sourceTree = "<group>"; };
 		6523EE9F21CDDBD200EF0333 /* LaLoop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LaLoop.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6523EEA221CDDBD200EF0333 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6523EEAA21CDDBD200EF0333 /* apollo_iOS.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = apollo_iOS.xcdatamodel; sourceTree = "<group>"; };
@@ -71,6 +74,7 @@
 		65C3A2AE227E0C4100307275 /* Genre+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Genre+CoreDataClass.swift"; sourceTree = "<group>"; };
 		65C3A2AF227E0C4100307275 /* Genre+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Genre+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		65C3A2B222838C9500307275 /* HeaderTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = HeaderTableView.swift; path = ../HeaderTableView.swift; sourceTree = "<group>"; };
+		65C3A2B62285274E00307275 /* FilterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterViewController.swift; sourceTree = "<group>"; };
 		65C48AFC223B0B6900231B32 /* FollowingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowingViewController.swift; sourceTree = "<group>"; };
 		65C48B00223BE70C00231B32 /* UILabelExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UILabelExtension.swift; sourceTree = "<group>"; };
 		65EC7B992274EF090077BBBD /* ArtistViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistViewModel.swift; sourceTree = "<group>"; };
@@ -116,6 +120,7 @@
 				6523EED821CDE59C00EF0333 /* ViewControllers */,
 				6523EEDD21CDECA000EF0333 /* RecordingData.swift */,
 				659BD63E227BEEFF00D732FF /* GenreData.swift */,
+				651BED5522867ACE009B7B9A /* ArtistData.swift */,
 				65FD31E621DC75A600C9BE90 /* LocalNotif.swift */,
 			);
 			path = LaLoop;
@@ -174,6 +179,7 @@
 				65C48AFC223B0B6900231B32 /* FollowingViewController.swift */,
 				659BD62F227B73A600D732FF /* SettingsViewController.swift */,
 				659BD640227C19DF00D732FF /* LoadingViewController.swift */,
+				65C3A2B62285274E00307275 /* FilterViewController.swift */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -316,10 +322,12 @@
 				6523EECB21CDDEC400EF0333 /* Artist+CoreDataClass.swift in Sources */,
 				6523EECC21CDDEC400EF0333 /* Artist+CoreDataProperties.swift in Sources */,
 				65C48AFD223B0B6900231B32 /* FollowingViewController.swift in Sources */,
+				65C3A2B72285274E00307275 /* FilterViewController.swift in Sources */,
 				653EA79322498527005B9C35 /* RecordingCell.swift in Sources */,
 				659BD63D227BA0F000D732FF /* SectionViewModel.swift in Sources */,
 				65C48B01223BE70C00231B32 /* UILabelExtension.swift in Sources */,
 				653EA7952249F0FE005B9C35 /* ArtistCell.swift in Sources */,
+				651BED5622867ACE009B7B9A /* ArtistData.swift in Sources */,
 				65C3A2B0227E0C4100307275 /* Genre+CoreDataClass.swift in Sources */,
 				6523EEC921CDDEC400EF0333 /* Recording+CoreDataClass.swift in Sources */,
 				659BD630227B73A600D732FF /* SettingsViewController.swift in Sources */,

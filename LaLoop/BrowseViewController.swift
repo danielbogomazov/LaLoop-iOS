@@ -17,7 +17,11 @@ class BrowseViewController: UIViewController {
     private lazy var connectionView = UIView()
     private lazy var tryAgainButton = UIButton()
     
-    private var filteredRecordings: [Recording] = []
+    var filteredRecordings: [Recording] = []
+    var searchedRecordings: [Recording] = []
+    var dateFilter: Util.DateFilter = .allTime
+    var genresFilter: [String] = []
+
     
     var connected: Bool! {
         didSet {
@@ -34,6 +38,8 @@ class BrowseViewController: UIViewController {
         setupTableView()
         recordingsTableView.delegate = self
         recordingsTableView.navigationController = navigationController
+        
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: #imageLiteral(resourceName: "Filter").withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(filterButtonPressed(_:)))
 
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard)))
     }
@@ -122,6 +128,14 @@ class BrowseViewController: UIViewController {
             }
         }
     }
+    
+    @objc func filterButtonPressed(_ sender: UIBarButtonItem) {
+        let filterVC = FilterViewController()
+        filterVC.browseViewController = self
+        let navController = UINavigationController(rootViewController: filterVC)
+        navController.modalPresentationStyle = .formSheet
+        present(navController, animated: true)
+    }
             
     func setupTableView() {
         recordingsTableView = HeaderTableView(frame: .zero, style: .plain, title: "Browse")
@@ -138,35 +152,26 @@ class BrowseViewController: UIViewController {
         view.endEditing(true)
     }
     
-    func filterRecordings() {
-        if let filterString = searchBar.text?.lowercased() {
-            filteredRecordings = AppDelegate.recordings.filter {
-                $0.name.lowercased().contains(filterString) || $0.artists.first?.name.lowercased().contains(filterString) ?? false
+    func searchRecordings() {
+        if let searchString = searchBar.text?.lowercased() {
+
+            let recordings = (dateFilter != .allTime || genresFilter != []) ? filteredRecordings : AppDelegate.recordings
+            
+            searchedRecordings = recordings.filter {
+                $0.name.lowercased().contains(searchString) || $0.artists.first?.name.lowercased().contains(searchString) ?? false
             }
-            if filteredRecordings.count == 0 {
+            if searchedRecordings.count == 0 {
                 // TODO : Display a "none found" popup
             }
         } else {
-            filteredRecordings = []
+            searchedRecordings = []
         }
     }
     
     func populateRecordings() {
         
-        // Remove timezone and set to midnight
+        let currDate = Util.stripTimezone(from: Date())
         let formatter = DateFormatter()
-        var dateComponents = DateComponents()
-        formatter.dateFormat = "yyyy"
-        dateComponents.year = Int(formatter.string(from: Date()))
-        formatter.dateFormat = "MM"
-        dateComponents.month = Int(formatter.string(from: Date()))
-        formatter.dateFormat = "dd"
-        dateComponents.day = Int(formatter.string(from: Date()))
-        dateComponents.timeZone = TimeZone(abbreviation: "GMT")
-        dateComponents.hour = 0
-        dateComponents.minute = 0
-        let currDate = Calendar.current.date(from: dateComponents) ?? Date()
-
         formatter.dateFormat = "yyyyMM"
         let request: NSFetchRequest<Recording> = Recording.fetchRequest()
         request.sortDescriptors = [NSSortDescriptor(key: "release_date", ascending: true)]
@@ -219,7 +224,9 @@ extension BrowseViewController: HeaderViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return filteredRecordings.count == 0 ? AppDelegate.recordings.count : filteredRecordings.count
+        return searchedRecordings.count != 0 ?
+            searchedRecordings.count : filteredRecordings.count != 0 ?
+            filteredRecordings.count : AppDelegate.recordings.count
     }
         
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -251,7 +258,9 @@ extension BrowseViewController: HeaderViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let recording = filteredRecordings.count == 0 ? AppDelegate.recordings[indexPath.row] : filteredRecordings[indexPath.row]
+        let recording = searchedRecordings.count != 0 ?
+            searchedRecordings[indexPath.row] : filteredRecordings.count != 0 ?
+                filteredRecordings[indexPath.row] : AppDelegate.recordings[indexPath.row]
         let cell = RecordingCell()
         cell.includeArtistLabel = true
         cell.includeFollowingButton = true
@@ -283,8 +292,6 @@ extension BrowseViewController: HeaderViewDelegate {
             return [follow]
         }
     }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {}
 }
 
 extension BrowseViewController: UISearchBarDelegate {
@@ -295,12 +302,12 @@ extension BrowseViewController: UISearchBarDelegate {
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searchBar.text = ""
         dismissKeyboard()
-        filterRecordings()
+        searchRecordings()
         reloadTableView()
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        filterRecordings()
+        searchRecordings()
         reloadTableView()
     }
 }

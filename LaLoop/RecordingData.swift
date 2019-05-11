@@ -42,6 +42,7 @@ struct RecordingObj: Decodable {
         
         if foundRecordings.count < 1 {
             recording = (createNewFor(entity: .recording)[0] as! Recording)
+            recording.date_added = Date()
             newRecording = true
         } else {
             let formatter = DateFormatter()
@@ -179,7 +180,6 @@ struct RecordingObj: Decodable {
                 return []
             }
         }
-        
     }
     
     func createNewFor(entity: Util.entity) -> [RecordingInformation] {

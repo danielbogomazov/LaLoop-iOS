@@ -18,5 +18,6 @@ extension Artist {
     }
 
     @NSManaged public var recordings: Set<Recording>
+    @NSManaged public var genres: Set<Genre>
 
 }

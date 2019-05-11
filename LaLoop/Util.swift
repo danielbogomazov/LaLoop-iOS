@@ -31,6 +31,7 @@ public class Util {
     struct URLs {
         static let recordingsURL = "http://107.152.35.241/json/recordings/current.json" // apollo webserver
         static let genreURL = "http://107.152.35.241/json/genres/genres.json"
+        static let artistURL = "http://107.152.35.241/json/artists/artists.json"
     }
     struct Keys {
         static let followedRecordingsKey = "Followed Recordings"
@@ -63,6 +64,13 @@ public class Util {
         static let rnb_and_soul = "R&B and soul"
         static let rock = "Rock"
         static let worship = "Worship"
+    }
+    
+    enum DateFilter {
+        case today
+        case pastWeek
+        case pastMonth
+        case allTime
     }
     
     static func getCountdownString(until releaseDate: Date) -> String {
@@ -208,7 +216,14 @@ public class Util {
                 return
             }
             getData(from: Util.URLs.recordingsURL) { success in
-                completionHandler(success)
+                if !success {
+                    completionHandler(false)
+                    return
+                }
+                getData(from: Util.URLs.artistURL) { success in
+                    completionHandler(success)
+                }
+
             }
         }
     }
@@ -265,6 +280,14 @@ public class Util {
                     var jsonData = try JSONDecoder().decode(GenreData.self, from: data)
                     jsonData.save()
                     completionHandler(true)
+                case Util.URLs.artistURL:
+                    let jsonData = try JSONDecoder().decode(ArtistData.self, from: data)
+                    for var artist in jsonData.artists {
+                        DispatchQueue.main.async {
+                            artist.save()
+                        }
+                    }
+                    completionHandler(true)
                 default:
                     completionHandler(false)
                 }
@@ -302,6 +325,25 @@ public class Util {
         UserDefaults.standard.set(false, forKey: Util.Genres.rnb_and_soul)
         UserDefaults.standard.set(false, forKey: Util.Genres.rock)
         UserDefaults.standard.set(false, forKey: Util.Genres.worship)
-
+    }
+    
+    /// Remove timezone and set to midnight
+    ///
+    /// - Parameter date: date with timezone
+    /// - Returns: new date
+    static func stripTimezone(from date: Date) -> Date {
+        // Remove timezone and set to midnight
+        let formatter = DateFormatter()
+        var dateComponents = DateComponents()
+        formatter.dateFormat = "yyyy"
+        dateComponents.year = Int(formatter.string(from: Date()))
+        formatter.dateFormat = "MM"
+        dateComponents.month = Int(formatter.string(from: Date()))
+        formatter.dateFormat = "dd"
+        dateComponents.day = Int(formatter.string(from: Date()))
+        dateComponents.timeZone = TimeZone(abbreviation: "GMT")
+        dateComponents.hour = 0
+        dateComponents.minute = 0
+        return Calendar.current.date(from: dateComponents) ?? date
     }
 }
