@@ -206,6 +206,7 @@ extension FollowingViewController: HeaderViewDelegate {
             cell.recordingViewModel = RecordingViewModel(recording: recordings[indexPath.row - 1])
             cell.recordingLabelFontSize = 20.0
             cell.dateLabelFontSize = 16.0
+            cell.backgroundColor = UIColor.white.withAlphaComponent(0.05)
             return cell
         }
     }
