@@ -58,6 +58,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             Util.resetSettings()
         }
         
+        application.setMinimumBackgroundFetchInterval(UIApplication.backgroundFetchIntervalMinimum)
+        
         // Remove navbar bottom border
         UINavigationBar.appearance().shadowImage = UIImage()
         UINavigationBar.appearance().setBackgroundImage(UIImage(), for: .default)
