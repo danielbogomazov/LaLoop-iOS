@@ -131,12 +131,13 @@ class FilterViewController: UIViewController {
         }
         
         // Genres filter
-        for genre in browseViewController?.genresFilter ?? [] {
+        if let filteredGenres = browseViewController?.genresFilter,
+            filteredGenres.count > 0 {
             filteredRecordings = filteredRecordings.filter {
                 let genres = Array($0.genres) + ($0.artists.first?.genres ?? [])
                 
-                for g in genres {
-                    if g.name == genre {
+                for genre in genres {
+                    if filteredGenres.contains(genre.name) {
                         return true
                     }
                 }
