@@ -114,5 +114,6 @@ class RecordingCell: UITableViewCell {
     
     @objc func followingButtonPressed(_ sender: UIButton) {
         recordingViewModel.changeFollowingStatus()
+        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
     }
 }

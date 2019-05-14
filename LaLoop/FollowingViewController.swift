@@ -215,6 +215,7 @@ extension FollowingViewController: HeaderViewDelegate {
         if indexPath.row == 0 {
             artists[indexPath.section].isExpanded = !artists[indexPath.section].isExpanded
             tableView.reloadSections([indexPath.section], with: .none)
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
         }
     }
     
