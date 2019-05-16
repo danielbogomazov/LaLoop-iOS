@@ -77,7 +77,10 @@ class FilterViewController: UIViewController {
                              NSLayoutConstraint(item: dateFilterSegmentedControl, attribute: .right, relatedBy: .equal, toItem: view, attribute: .right, multiplier: 1.0, constant: -16)])
         dateFilterSegmentedControl.tintColor = .white
         dateFilterSegmentedControl.addTarget(self, action: #selector(dateFilterValueChanged(_:)), for: .valueChanged)
-
+        dateFilterSegmentedControl.apportionsSegmentWidthsByContent = false
+        let font = UIFont.systemFont(ofSize: 10)
+        dateFilterSegmentedControl.setTitleTextAttributes([NSAttributedString.Key.font : font], for: .normal)
+        
         view.addConstraints([NSLayoutConstraint(item: genreLabel, attribute: .top, relatedBy: .equal, toItem: dateFilterSegmentedControl, attribute: .bottom, multiplier: 1.0, constant: 32),
                              NSLayoutConstraint(item: genreLabel, attribute: .left, relatedBy: .equal, toItem: view, attribute: .left, multiplier: 1.0, constant: 16),
                              NSLayoutConstraint(item: genreLabel, attribute: .right, relatedBy: .equal, toItem: view, attribute: .right, multiplier: 1.0, constant: 16)])
@@ -183,6 +186,7 @@ extension FilterViewController: UICollectionViewDelegate, UICollectionViewDataSo
         cell.backgroundColor = browseViewController?.genresFilter.contains(genre) ?? false ? UIColor.white.withAlphaComponent(0.5) : .clear
 
         cell.titleLabel.text = genre
+        cell.titleLabel.setupLabel(fontWeight: .regular, fontSize: cell.titleLabel.font.pointSize - 2, textColor: .white) // pointSize - 2 for a cleaner padding look with the border
         cell.layer.borderColor = UIColor.white.cgColor
         cell.layer.borderWidth = 1
         return cell
