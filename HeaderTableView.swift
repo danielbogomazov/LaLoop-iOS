@@ -89,6 +89,7 @@ class HeaderTableView: UIView {
             searchBar.tintColor = Util.Color.secondary
             (searchBar.value(forKey: "searchField") as? UITextField)?.textColor = .white
             searchBar.delegate = self
+            searchBar.setBackgroundImage(UIImage(), for: .any, barMetrics: .default)
         }
         
         let bottomConstant = includeSearchBar ? maxHeaderHeight / -2 : 0
@@ -199,39 +200,50 @@ extension HeaderTableView: UITableViewDelegate, UITableViewDataSource {
         }
     }
     
+    func collapse(to position: CGFloat, animated: Bool = true) {
+        UIView.animate(withDuration: animated ? 0.3 : 0) {
+            self.headerViewHeightConstraint.constant = position
+            self.updateHeader()
+            self.layoutIfNeeded()
+        }
+    }
+    
+    func expand(to position: CGFloat, animated: Bool = true) {
+        UIView.animate(withDuration: animated ? 0.3 : 0) {
+            self.headerViewHeightConstraint.constant = position
+            self.updateHeader()
+            self.layoutIfNeeded()
+        }
+    }
+    
     func scrollViewDidStopScrolling() {
         layoutIfNeeded()
         let mid = (maxHeaderHeight - minHeaderHeight) / 2 + minHeaderHeight
-        
-        if headerViewHeightConstraint.constant > mid {
-            // Expand
-            UIView.animate(withDuration: 0.3) {
-                self.headerViewHeightConstraint.constant = self.maxHeaderHeight
-                self.layoutIfNeeded()
+
+        switch includeSearchBar {
+        case true:
+            if headerViewHeightConstraint.constant > mid + maxHeaderHeight / 4 {
+                expand(to: maxHeaderHeight)
+            } else if headerViewHeightConstraint.constant > mid {
+                collapse(to: mid)
+            } else if headerViewHeightConstraint.constant < mid - maxHeaderHeight / 4 {
+                collapse(to: minHeaderHeight)
+            } else {
+                expand(to: mid)
             }
-        } else {
-            // Collapse
-            UIView.animate(withDuration: 0.3) {
-                self.headerViewHeightConstraint.constant = self.minHeaderHeight
-                self.layoutIfNeeded()
-            }
+        default:
+            headerViewHeightConstraint.constant > mid ? expand(to: maxHeaderHeight) : collapse(to: minHeaderHeight)
         }
     }
     
     func updateHeader() {
-        let range = maxHeaderHeight - minHeaderHeight
-        let openAmount = headerViewHeightConstraint.constant - minHeaderHeight
+        let range = includeSearchBar ? (maxHeaderHeight - minHeaderHeight) / 2 : maxHeaderHeight - minHeaderHeight
+        let openAmount = includeSearchBar ? headerViewHeightConstraint.constant - maxHeaderHeight / 2 - minHeaderHeight : headerViewHeightConstraint.constant - minHeaderHeight
         let percentage = openAmount / range
         
         headerLabel.alpha = percentage
-        
-        if percentage == 0 {
-            navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(1)]
-        } else {
-            navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0)]
-        }
+        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(1 - percentage)]
     }
-    
 }
 
 extension HeaderTableView: UISearchBarDelegate {
