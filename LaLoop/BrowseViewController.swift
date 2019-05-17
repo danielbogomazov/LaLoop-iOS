@@ -160,9 +160,7 @@ class BrowseViewController: UIViewController {
             searchedRecordings = recordings.filter {
                 $0.name.lowercased().contains(searchString) || $0.artists.first?.name.lowercased().contains(searchString) ?? false
             }
-            if searchedRecordings.count == 0 {
-                // TODO : Display a "none found" popup
-            }
+            recordingsTableView.setupErrorMessage(isHidden: searchedRecordings.count != 0 || searchString == "", searchString: searchString)
         } else {
             searchedRecordings = []
         }
@@ -276,6 +274,7 @@ extension BrowseViewController: HeaderViewDelegate {
         searchBar.text = ""
         dismissKeyboard()
         searchRecordings()
+        recordingsTableView.setupErrorMessage(isHidden: true)
         reloadTableView()
     }
     

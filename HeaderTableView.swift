@@ -32,6 +32,7 @@ class HeaderTableView: UIView {
     private var previousScrollOffset: CGFloat = 0
     private var title = ""
     private var includeSearchBar = false
+    private var errorLabel = UILabel()
     lazy var searchBar = UISearchBar()
     var maxHeaderHeight: CGFloat!
     let minHeaderHeight: CGFloat = 0
@@ -68,6 +69,16 @@ class HeaderTableView: UIView {
     }
     
     private func setupTableView() {
+        
+        errorLabel.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(errorLabel)
+        addConstraints([NSLayoutConstraint(item: errorLabel, attribute: .left, relatedBy: .equal, toItem: self, attribute: .left, multiplier: 1.0, constant: 18),
+                        NSLayoutConstraint(item: errorLabel, attribute: .right, relatedBy: .equal, toItem: self, attribute: .right, multiplier: 1.0, constant: -18),
+                        NSLayoutConstraint(item: errorLabel, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1.0, constant: 0)])
+        errorLabel.setupLabel(fontWeight: .bold, fontSize: errorLabel.font.pointSize, textColor: Util.Color.main)
+        errorLabel.textAlignment = .center
+        errorLabel.isHidden = true
+        
         headerView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(headerView)
         addConstraints([NSLayoutConstraint(item: headerView, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1.0, constant: 0),
@@ -110,6 +121,12 @@ class HeaderTableView: UIView {
         tableView.backgroundColor = Util.Color.backgroundColor
         tableView.delegate = self
         tableView.dataSource = self
+    }
+    
+    func setupErrorMessage(isHidden: Bool, searchString: String = "") {
+        errorLabel.isHidden = isHidden
+        tableView.isHidden = !isHidden
+        errorLabel.text = "Couldn't find \"\(searchString)\""
     }
 
     @objc func ref(_ sender: UIRefreshControl) {
