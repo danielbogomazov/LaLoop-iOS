@@ -30,6 +30,7 @@ class FollowingViewController: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         setupNoneFollowingLabel()
         populateArtists()
         reloadTableView()
@@ -152,7 +153,7 @@ class FollowingViewController: UIViewController {
         if artistsTableView.tableView.numberOfSections > 0 &&
             artistsTableView.tableView.numberOfRows(inSection: 0) > 0 {
             
-            artistsTableView.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: animated)
+            artistsTableView.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .none, animated: animated)
         }
     }
 }

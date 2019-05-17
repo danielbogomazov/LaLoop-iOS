@@ -12,12 +12,16 @@ import UIKit
     @objc optional func refresh(completionHandler: @escaping () -> Void)
     @objc optional func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]?
     @objc optional func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
+    @objc optional func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat
+    @objc optional func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView?
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView?
     func numberOfSections(in tableView: UITableView) -> Int
+
+    @objc optional func searchBarSearchButtonClicked(_ searchBar: UISearchBar)
+    @objc optional func searchBarCancelButtonClicked(_ searchBar: UISearchBar)
+    @objc optional func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String)
 }
 
 class HeaderTableView: UIView {
@@ -27,7 +31,9 @@ class HeaderTableView: UIView {
     private var headerLabel = UILabel()
     private var previousScrollOffset: CGFloat = 0
     private var title = ""
-    let maxHeaderHeight: CGFloat = 50
+    private var includeSearchBar = false
+    lazy var searchBar = UISearchBar()
+    var maxHeaderHeight: CGFloat!
     let minHeaderHeight: CGFloat = 0
     var tableView: UITableView!
     var headerViewHeightConstraint: NSLayoutConstraint!
@@ -46,11 +52,14 @@ class HeaderTableView: UIView {
         }
     }
     
-    init(frame: CGRect, style: UITableView.Style, title: String) {
+    init(frame: CGRect, style: UITableView.Style, title: String, includeSearchBar: Bool = false) {
         super.init(frame: frame)
         
         self.title = title
-        tableView = UITableView(frame: frame, style: style)
+        self.includeSearchBar = includeSearchBar
+        
+        maxHeaderHeight = includeSearchBar ? 100 : 50
+        tableView = UITableView(frame: .zero, style: style)
         setupTableView()
     }
     
@@ -68,15 +77,29 @@ class HeaderTableView: UIView {
         addConstraint(headerViewHeightConstraint)
         headerView.backgroundColor = Util.Color.backgroundColor
         
+        if includeSearchBar {
+            searchBar.translatesAutoresizingMaskIntoConstraints = false
+            headerView.addSubview(searchBar)
+            headerView.addConstraints([NSLayoutConstraint(item: searchBar, attribute: .left, relatedBy: .equal, toItem: headerView, attribute: .left, multiplier: 1.0, constant: 0),
+                                       NSLayoutConstraint(item: searchBar, attribute: .right, relatedBy: .equal, toItem: headerView, attribute: .right, multiplier: 1.0, constant: 0),
+                                       NSLayoutConstraint(item: searchBar, attribute: .bottom, relatedBy: .equal, toItem: headerView, attribute: .bottom, multiplier: 1.0, constant: 0)])
+            searchBar.barStyle = .blackTranslucent
+            searchBar.barTintColor = Util.Color.backgroundColor
+            searchBar.showsCancelButton = true
+            searchBar.tintColor = Util.Color.secondary
+            (searchBar.value(forKey: "searchField") as? UITextField)?.textColor = .white
+            searchBar.delegate = self
+        }
+        
+        let bottomConstant = includeSearchBar ? maxHeaderHeight / -2 : 0
         headerLabel.translatesAutoresizingMaskIntoConstraints = false
         headerView.addSubview(headerLabel)
         headerView.addConstraints([NSLayoutConstraint(item: headerLabel, attribute: .left, relatedBy: .equal, toItem: headerView, attribute: .left, multiplier: 1.0, constant: 20),
                                    NSLayoutConstraint(item: headerLabel, attribute: .right, relatedBy: .equal, toItem: headerView, attribute: .right, multiplier: 1.0, constant: 0),
-                                   NSLayoutConstraint(item: headerLabel, attribute: .bottom, relatedBy: .equal, toItem: headerView, attribute: .bottom, multiplier: 1.0, constant: 0)])
+                                   NSLayoutConstraint(item: headerLabel, attribute: .bottom, relatedBy: .equal, toItem: headerView, attribute: .bottom, multiplier: 1.0, constant: bottomConstant)])
         headerLabel.text = title
         headerLabel.setupLabel(fontWeight: .bold, fontSize: 50, textColor: .white)
         
-        tableView = UITableView(frame: .zero, style: .plain)
         tableView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(tableView)
         addConstraints([NSLayoutConstraint(item: tableView!, attribute: .top, relatedBy: .equal, toItem: headerView, attribute: .bottom, multiplier: 1.0, constant: 0),
@@ -109,21 +132,20 @@ extension HeaderTableView: UITableViewDelegate, UITableViewDataSource {
         return delegate?.tableView(tableView, heightForRowAt: indexPath) ?? 0
     }
     
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return delegate?.tableView(tableView, heightForHeaderInSection: section) ?? 0
-    }
-                    
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        return delegate?.tableView(tableView, viewForHeaderInSection: section)
-    }
-                        
     func numberOfSections(in tableView: UITableView) -> Int {
         return delegate?.numberOfSections(in: tableView) ?? 0
     }
                             
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        guard let r = delegate?.tableView?(tableView, editActionsForRowAt: indexPath) else { return [] }
-        return r
+        return delegate?.tableView?(tableView, editActionsForRowAt: indexPath) ?? []
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return delegate?.tableView?(tableView, heightForHeaderInSection: section) ?? 0.0
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        return delegate?.tableView?(tableView, viewForHeaderInSection: section)
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -157,7 +179,7 @@ extension HeaderTableView: UITableViewDelegate, UITableViewDataSource {
             headerViewHeightConstraint.constant = newHeight
             setScrollPosition(for: tableView, position: previousScrollOffset)
         }
-        
+
         previousScrollOffset = scrollView.contentOffset.y
     }
     
@@ -210,4 +232,18 @@ extension HeaderTableView: UITableViewDelegate, UITableViewDataSource {
         }
     }
     
+}
+
+extension HeaderTableView: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        delegate?.searchBarSearchButtonClicked?(searchBar)
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        delegate?.searchBarCancelButtonClicked?(searchBar)
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        delegate?.searchBar?(searchBar, textDidChange: searchText)
+    }
 }

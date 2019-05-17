@@ -76,7 +76,7 @@ class SettingsViewController: UIViewController {
         if settingsTableView.tableView.numberOfSections > 0 &&
             settingsTableView.tableView.numberOfRows(inSection: 0) > 0 {
             
-            settingsTableView.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: animated)
+            settingsTableView.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .none, animated: animated)
         }
     }
 

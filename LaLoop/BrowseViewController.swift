@@ -12,7 +12,6 @@ import CoreData
 class BrowseViewController: UIViewController {
     
     private var recordingsTableView: HeaderTableView!
-    private lazy var searchBar = UISearchBar()
     private lazy var loadingView = UIView()
     private lazy var connectionView = UIView()
     private lazy var tryAgainButton = UIButton()
@@ -46,9 +45,10 @@ class BrowseViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        reloadTableView()
+        scrollTableViewToTop(animated: false)
         recordingsTableView.headerViewHeightConstraint.constant = recordingsTableView.maxHeaderHeight
         recordingsTableView.updateHeader()
-        reloadTableView()
     }
     
     override func didReceiveMemoryWarning() {
@@ -60,7 +60,7 @@ class BrowseViewController: UIViewController {
         if recordingsTableView.tableView.numberOfSections > 0 &&
             recordingsTableView.tableView.numberOfRows(inSection: 0) > 0 {
             
-            recordingsTableView.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: animated)
+            recordingsTableView.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .none, animated: animated)
         }
     }
     
@@ -138,7 +138,7 @@ class BrowseViewController: UIViewController {
     }
             
     func setupTableView() {
-        recordingsTableView = HeaderTableView(frame: .zero, style: .plain, title: "Browse")
+        recordingsTableView = HeaderTableView(frame: .zero, style: .plain, title: "Browse", includeSearchBar: true)
         recordingsTableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(recordingsTableView)
         view.addConstraints([NSLayoutConstraint(item: recordingsTableView!, attribute: .top, relatedBy: .equal, toItem: view, attribute: .top, multiplier: 1.0, constant: 0),
@@ -153,7 +153,7 @@ class BrowseViewController: UIViewController {
     }
     
     func searchRecordings() {
-        if let searchString = searchBar.text?.lowercased() {
+        if let searchString = recordingsTableView.searchBar.text?.lowercased() {
 
             let recordings = (dateFilter != .allTime || genresFilter != []) ? filteredRecordings : AppDelegate.recordings
             
@@ -204,7 +204,6 @@ class BrowseViewController: UIViewController {
     /// Needed to reload the table view from AppDelegate
     func reloadTableView() {
         recordingsTableView.tableView.reloadData()
-        scrollTableViewToTop(animated: false)
     }
 }
 
@@ -227,30 +226,6 @@ extension BrowseViewController: HeaderViewDelegate {
         return searchedRecordings.count != 0 ?
             searchedRecordings.count : filteredRecordings.count != 0 ?
             filteredRecordings.count : AppDelegate.recordings.count
-    }
-        
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 48
-    }
-    
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let view = UIView()
-        view.backgroundColor = Util.Color.backgroundColor
-        
-        view.addSubview(searchBar)
-        searchBar.translatesAutoresizingMaskIntoConstraints = false
-        view.addConstraints([NSLayoutConstraint(item: searchBar, attribute: .top, relatedBy: .equal, toItem: view, attribute: .top, multiplier: 1.0, constant: 8),
-                             NSLayoutConstraint(item: searchBar, attribute: .left, relatedBy: .equal, toItem: view, attribute: .left, multiplier: 1.0, constant: 0),
-                             NSLayoutConstraint(item: searchBar, attribute: .right, relatedBy: .equal, toItem: view, attribute: .right, multiplier: 1.0, constant: 0),
-                             NSLayoutConstraint(item: searchBar, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1.0, constant: 32)])
-        searchBar.barStyle = .blackTranslucent
-        searchBar.barTintColor = Util.Color.backgroundColor
-        searchBar.showsCancelButton = true
-        searchBar.tintColor = Util.Color.secondary
-        (searchBar.value(forKey: "searchField") as? UITextField)?.textColor = .white
-        searchBar.delegate = self
-
-        return view
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -292,9 +267,7 @@ extension BrowseViewController: HeaderViewDelegate {
             return [follow]
         }
     }
-}
-
-extension BrowseViewController: UISearchBarDelegate {
+    
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         dismissKeyboard()
     }
