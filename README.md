@@ -1,8 +1,8 @@
-# LaLoop-iOS
-iOS application used to display upcoming music using the [apollo webscraper](https://github.com/danielbogomazov/apollo)
+# LaLoop for iOS
+LaLoop is an iOS application used to display upcoming music album release dates.
 
-## Version
-Pre-alpha. Working on this application simultaneously to [apollo](https://github.com/danielbogomazov/apollo). A large change in one may affect the other greatly.
+## Version 1.0.x
+Download LaLoop on the [App Store](https://itunes.apple.com/us/app/laloop/id1461729494?mt=8)
 
 ## Support
 If you're having any difficulties with the application, feel free to contact me at danielbogomazov@gmail.com _or_ by [creating a new issue](https://github.com/danielbogomazov/LaLoop-iOS/issues). LaLoop is developed and maintained by one person - replies may not be immediate.
@@ -13,4 +13,4 @@ If you're having any difficulties with the application, feel free to contact me 
   - **IMPORTANT** : The standard we use for this situation is to set the date in the db as ([1999 + YYYY]-MM-01)
     - Example: A recording released on September 2018 without a day will be stored as 4017-09-01
     - Conversion back will be handled on the client-side 
-    
+    - Be aware that this is temporary - future versions will use a singular integer format instead
