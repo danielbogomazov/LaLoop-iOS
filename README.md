@@ -8,6 +8,8 @@ Download LaLoop on the [App Store](https://itunes.apple.com/us/app/laloop/id1461
 If you're having any difficulties with the application, feel free to contact me at danielbogomazov@gmail.com _or_ by [creating a new issue](https://github.com/danielbogomazov/LaLoop-iOS/issues). LaLoop is developed and maintained by one person - replies may not be immediate.
 
 ## Development Contribution Note
+- LaLoop displays the information gathered by the apollo webscraper on iOS devices. More information on apollo and the API will be available in the future. If you have any questions, feel free to contact me at danielbogomazov@gmail.com
+
 - If the JSON from the apollo webscraper contains the month and year but not the day for the release date of the recording, we set the day to 01. To create a distinction between these dates and release dates _actually_ released on the first of the month, we use the following standard:
 
   - **IMPORTANT** : The standard we use for this situation is to set the date in the db as ([1999 + YYYY]-MM-01)
